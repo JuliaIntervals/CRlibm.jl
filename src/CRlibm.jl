@@ -9,12 +9,18 @@
     tar xzvf crlibm-1.0beta4.tar.gz
 
 3. In the resulting crlibm-1.0beta4 directory, run (on Mac):
-    gcc -shared -o crlibm.dylib *.o -lcrlibm
 
-On Linux, presumably change  crlibm.dylib  to  crlibm.so
+    export CFLAGS=-fpic
+    ./configure
+    make
 
-4. Move crlibm.dylib  or  crlibm.so  to this directory
-=#
+    gcc -L. -shared -o libcrlibm.dylib *.o   # Mac
+
+    gcc -L. -shared -o libcrlibm.so *.o   # Linux
+
+
+4. Add the directory where the shared library is to Base.DL_LOAD_PATH
+
 
 
 
@@ -37,7 +43,7 @@ for f in (:sin, :cos, :tan, :exp, :log)
         mode = Expr(:quote, mode)
         mode = :(::RoundingMode{$mode})
 
-        @eval ($f)(x::Float64, $mode) = ccall(($fname, "crlibm"), Float64, (Float64,), x)
+        @eval ($f)(x::Float64, $mode) = ccall(($fname, "libcrlibm"), Float64, (Float64,), x)
     end
 end
 

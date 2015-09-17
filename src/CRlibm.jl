@@ -21,7 +21,7 @@
 
 4. Add the directory where the shared library is to Base.DL_LOAD_PATH
 
-
+=#
 
 
 module CRlibm
@@ -47,7 +47,8 @@ for f in (:sin, :cos, :tan, :exp, :log)
     end
 end
 
-end
+
+end # module
 
 
 

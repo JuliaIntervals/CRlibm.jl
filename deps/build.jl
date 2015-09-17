@@ -18,17 +18,15 @@ end
 
 @BinDeps.setup
 
-libcrlibm = library_dependency(aliases=["libcrlibm.so", "libcrlibm.dylib"])
+libcrlibm = library_dependency("libcrlibm", aliases=["libcrlibm.so", "libcrlibm.dylib"])
 
 
 provides(Sources,
         URI("http://lipforge.ens-lyon.fr/frs/download.php/162/crlibm-1.0beta4.tar.gz"),
         libcrlibm, os = :Unix)
 
-srcdir = joinpath(BinDeps.depsdir(libcrlibm), "src", libcrlibm)
+srcdir = joinpath(BinDeps.depsdir(libcrlibm), "src", "crlibm-1.0beta4")
 
-@osx_only
-@linux_only
 
 provides(SimpleBuild,
     (@build_steps begin
@@ -37,7 +35,8 @@ provides(SimpleBuild,
         @build_steps begin
             ChangeDirectory(srcdir)
             @build_steps begin
-                `./configure --with-pic`
+                `export CFLAGS=-fpic`
+                `./configure`
                 `make`
 
                 `gcc -L. -shared -o libcrlibm.$suffix *.o`
@@ -48,4 +47,4 @@ provides(SimpleBuild,
 )
 
 
-@BinDeps.install [:libcrlibm => :libcrlibm]
+@BinDeps.install Dict(:libcrlibm => :libcrlibm)

@@ -40,7 +40,7 @@ provides(SimpleBuild,
 
                 #`gcc -L. -shared -o libcrlibm.$suffix *.o`
                 #pipeline(`find . -d 1 -name *.o`, `xargs gcc -L. -shared -o libcrlibm.dylib`)
-                `make -f ../shared.mk --silent`
+                `make -f ../shared.mk SUFFIX=$suffix --silent `
             end
         end
     end),

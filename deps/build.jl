@@ -1,14 +1,13 @@
-# modified from the Ipopt.jl package
-# https://github.com/JuliaOpt/Ipopt.jl/blob/master/deps/build.jl  (MIT license)
-
-# and Diercxk.jl:
+# Modified from Diercxk.jl:
 # https://github.com/kbarbary/Dierckx.jl/blob/master/deps/build.jl  (3-clause BSD license)
 
-using BinDeps
+# do it by hand since problem with BinDeps
+
 
 suffix = ""
 
 @unix_only begin
+    download = @osx ? `curl -O` : `wget`
     suffix = @osx ? "dylib" : "so"
 end
 
@@ -16,43 +15,20 @@ end
     error("Package not currently available on Windows")
 end
 
-@BinDeps.setup
+lib_name = "crlibm-1.0beta4"
 
-libcrlibm = library_dependency("libcrlibm", aliases=["libcrlibm.so", "libcrlibm.dylib"])
+file = "http://lipforge.ens-lyon.fr/frs/download.php/162/$(lib_name).tar.gz"
 
+println("Working in ", pwd())
+src_dir = "src"
+cd(src_dir)
 
-provides(Sources,
-        URI("http://lipforge.ens-lyon.fr/frs/download.php/162/crlibm-1.0beta4.tar.gz"),
-        libcrlibm, os = :Unix)
+#run(`$(download) $file`)
+#run(`tar xzvf $(lib_name).tar.gz`)
 
-srcdir = joinpath(BinDeps.depsdir(libcrlibm), "src", "crlibm-1.0beta4")
+#srcdir = "$(src_dir)/$(lib_name)"
 
-
-provides(SimpleBuild,
-    (@build_steps begin
-        GetSources(libcrlibm)
-    end), libcrlibm, os=:Unix
-)
-
-@BinDeps.install Dict(:libcrlibm => :libcrlibm)
-#
-#         @build_steps begin
-#             ChangeDirectory(srcdir)
-#             `./configure CFLAGS=-fpic`
-#             `make`
-#             `make -f ../shared.mk SUFFIX=$suffix`
-#         end
-#     end),
-#
-#     libcrlibm, os = :Unix
-# )
-#
-#
-# @BinDeps.install Dict(:libcrlibm => :libcrlibm)
-
-
-# do it by hand since problem with BinDeps
-cd(srcdir)
+cd(lib_name)
 println("Working in ", pwd())
 
 suffix = @osx? "dylib" : "so"

@@ -82,3 +82,11 @@ as `sin`, means that correct rounding is *much* harder; see e.g. reference [1]  
 [1] P. Kornerup, C. Lauter, V. Lefèvre, N. Louvet and J.-M. Muller
 Computing Correctly Rounded Integer Powers in Floating-Point Arithmetic
 ACM Transactions on Mathematical Software **37**(1), 2010
+
+## Author
+- [David P. Sanders](http://sistemas.fciencias.unam.mx/~dsanders),
+Departamento de Física, Facultad de Ciencias, Universidad Nacional Autónoma de México (UNAM)
+
+## Acknowledgements ##
+Financial support is acknowledged from DGAPA-UNAM PAPIME grant PE-107114 and DGAPA-UNAM PAPIIT grant IN-117214. 
+

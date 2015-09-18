@@ -9,17 +9,18 @@ library home page:
 > ### `CRlibm`, an efficient and proven correctly-rounded mathematical library
 
 > `CRlibm` is a free mathematical library (libm) which provides:
-    - implementations of the double-precision C99 standard elementary functions,
-    - correctly rounded in the four IEEE-754 rounding modes,
-    - with a comprehensive proof of both the algorithms used and their implementation,
-    - sufficiently efficient in average time, worst-case time, and memory consumption to replace existing libms transparently,
 
-`CRlibm` is distributed under the GNU Lesser General Public License (LGPL).
+> - implementations of the double-precision C99 standard elementary functions,
+> - correctly rounded in the four IEEE-754 rounding modes,
+> - with a comprehensive proof of both the algorithms used and their implementation,
+> - sufficiently efficient in average time, worst-case time, and memory consumption to replace existing libms transparently,
+
+> `CRlibm` is distributed under the GNU Lesser General Public License (LGPL).
 
 ## Usage
 
-Note that *the floating-point rounding mode should be set to `RoundNearest`
-(the default):
+Note that *the floating-point rounding mode should be set to `RoundNearest`*; normally nothing needs to be done,
+since this is the default value:
 
 ```julia
 julia> julia> set_rounding(Float64, RoundNearest)
@@ -42,18 +43,6 @@ julia> cos(0.5, RoundNearest)
 
 julia> cos(0.5)  # built-in
 0.8775825618903728
-
-julia> exp(1.0, RoundDown)
-2.718281828459045
-
-julia> exp(1.0, RoundUp)
-2.7182818284590455
-
-julia> exp(1.0, RoundNearest)
-2.718281828459045
-
-julia> exp(1.0)  # built-in
-2.718281828459045
 ```
 
 ## What is correct rounding?

@@ -35,12 +35,12 @@ provides(SimpleBuild,
         @build_steps begin
             ChangeDirectory(srcdir)
             @build_steps begin
-                `./configure --silent CFLAGS=-fpic`
-                `make --silent`
+                `./configure CFLAGS=-fpic`
+                `make`
 
                 #`gcc -L. -shared -o libcrlibm.$suffix *.o`
                 #pipeline(`find . -d 1 -name *.o`, `xargs gcc -L. -shared -o libcrlibm.dylib`)
-                `make -f ../shared.mk SUFFIX=$suffix --silent `
+                `make -f ../shared.mk SUFFIX=$suffix`
             end
         end
     end),

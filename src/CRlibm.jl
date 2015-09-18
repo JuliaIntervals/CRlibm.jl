@@ -11,9 +11,9 @@ end
 
 # imports and exports:
 
-functions = (:sin, :cos, :tan, :exp, :log)
+function_list = (:sin, :cos, :tan, :exp, :log)
 
-for f in functions
+for f in function_list
     @eval begin
          import Base.$f
      end
@@ -22,7 +22,7 @@ end
 
 ## Generate wrappers of CRlibm shared library:
 
-for f in functions
+for f in function_list
     for (mode, symb) in [(:Nearest, "n"), (:Up, "u"), (:Down, "d")  ]
 
         fname = symbol(f, "_r", symb)

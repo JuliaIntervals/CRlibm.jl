@@ -29,20 +29,33 @@ srcdir = joinpath(BinDeps.depsdir(libcrlibm), "src", "crlibm-1.0beta4")
 
 
 provides(SimpleBuild,
-
-    (@build_steps begin
-        GetSources(libcrlibm)
-
-        @build_steps begin
-            ChangeDirectory(srcdir)
-            `./configure CFLAGS=-fpic`
-            `make`
-            `make -f ../shared.mk SUFFIX=$suffix`
-        end
-    end),
-
-    libcrlibm, os = :Unix
+(@build_steps begin
+    GetSources(libcrlibm)
+end), libcrlibm, os=:Unix
 )
+#
+#         @build_steps begin
+#             ChangeDirectory(srcdir)
+#             `./configure CFLAGS=-fpic`
+#             `make`
+#             `make -f ../shared.mk SUFFIX=$suffix`
+#         end
+#     end),
+#
+#     libcrlibm, os = :Unix
+# )
+#
+#
+# @BinDeps.install Dict(:libcrlibm => :libcrlibm)
 
 
-@BinDeps.install Dict(:libcrlibm => :libcrlibm)
+# do it by hand since problem with BinDeps
+cd(srcdir)
+println("Working in ", pwd())
+
+suffix = @osx? "dylib" : "so"
+run(`./configure CFLAGS=-fpic`)
+println("Working in ", pwd())
+
+run(`make`)
+run(`make -f ../shared.mk SUFFIX=$suffix`)

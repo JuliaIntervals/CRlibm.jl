@@ -1,32 +1,13 @@
 
-# Instructions:
-
-#=
-1. Download the source code from
-    http://lipforge.ens-lyon.fr/frs/download.php/162/crlibm-1.0beta4.tar.gz
-
-2. Decompress it:
-    tar xzvf crlibm-1.0beta4.tar.gz
-
-3. In the resulting crlibm-1.0beta4 directory, run (on Mac):
-
-    export CFLAGS=-fpic
-    ./configure
-    make
-
-    gcc -L. -shared -o libcrlibm.dylib *.o   # Mac
-
-    gcc -L. -shared -o libcrlibm.so *.o   # Linux
-
-
-4. Add the directory where the shared library is to Base.DL_LOAD_PATH
-
-=#
-
-
 module CRlibm
 
-include("../deps/deps.jl")
+# following check from Ipopt.jl:
+if isfile(joinpath(dirname(@__FILE__),"..","deps","deps.jl"))
+    include("../deps/deps.jl")
+else
+    error("CRlibm not properly installed. Please run Pkg.build(\"CRlibm\")")
+end
+
 
 import Base:
     sin, cos, tan, exp, log
@@ -34,7 +15,7 @@ import Base:
 export sin, cos, tan, exp, log
 
 
-## Generate wrappers of crlibm shared library:
+## Generate wrappers of CRlibm shared library:
 
 for f in (:sin, :cos, :tan, :exp, :log)
     for (mode, symb) in [(:Nearest, "n"), (:Up, "u"), (:Down, "d")  ]

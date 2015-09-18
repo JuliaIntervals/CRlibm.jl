@@ -17,14 +17,16 @@ end
 
 lib_name = "crlibm-1.0beta4"
 
-file = "http://lipforge.ens-lyon.fr/frs/download.php/162/$(lib_name).tar.gz"
-
-println("Working in ", pwd())
 src_dir = "src"
 cd(src_dir)
 
-#run(`$(download) $file`)
-#run(`tar xzvf $(lib_name).tar.gz`)
+file = "http://lipforge.ens-lyon.fr/frs/download.php/162/$(lib_name).tar.gz"
+
+println("Working in ", pwd())
+
+
+run(`$(download) $file`)
+run(`tar xzvf $(lib_name).tar.gz`)
 
 #srcdir = "$(src_dir)/$(lib_name)"
 

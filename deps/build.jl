@@ -29,10 +29,12 @@ srcdir = joinpath(BinDeps.depsdir(libcrlibm), "src", "crlibm-1.0beta4")
 
 
 provides(SimpleBuild,
-(@build_steps begin
-    GetSources(libcrlibm)
-end), libcrlibm, os=:Unix
+    (@build_steps begin
+        GetSources(libcrlibm)
+    end), libcrlibm, os=:Unix
 )
+
+@BinDeps.install Dict(:libcrlibm => :libcrlibm)
 #
 #         @build_steps begin
 #             ChangeDirectory(srcdir)

@@ -29,21 +29,18 @@ srcdir = joinpath(BinDeps.depsdir(libcrlibm), "src", "crlibm-1.0beta4")
 
 
 provides(SimpleBuild,
+
     (@build_steps begin
         GetSources(libcrlibm)
 
         @build_steps begin
             ChangeDirectory(srcdir)
-            @build_steps begin
-                `./configure CFLAGS=-fpic`
-                `make`
-
-                #`gcc -L. -shared -o libcrlibm.$suffix *.o`
-                #pipeline(`find . -d 1 -name *.o`, `xargs gcc -L. -shared -o libcrlibm.dylib`)
-                `make -f ../shared.mk SUFFIX=$suffix`
-            end
+            `./configure CFLAGS=-fpic`
+            `make`
+            `make -f ../shared.mk SUFFIX=$suffix`
         end
     end),
+
     libcrlibm, os = :Unix
 )
 

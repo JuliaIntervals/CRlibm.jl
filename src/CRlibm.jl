@@ -26,6 +26,8 @@
 
 module CRlibm
 
+include("../deps/deps.jl")
+
 import Base:
     sin, cos, tan, exp, log
 
@@ -43,7 +45,7 @@ for f in (:sin, :cos, :tan, :exp, :log)
         mode = Expr(:quote, mode)
         mode = :(::RoundingMode{$mode})
 
-        @eval ($f)(x::Float64, $mode) = ccall(($fname, "libcrlibm"), Float64, (Float64,), x)
+        @eval ($f)(x::Float64, $mode) = ccall(($fname, libcrlibm), Float64, (Float64,), x)
     end
 end
 

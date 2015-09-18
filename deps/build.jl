@@ -35,7 +35,7 @@ provides(SimpleBuild,
         @build_steps begin
             ChangeDirectory(srcdir)
             @build_steps begin
-                `./configure CFLAGS=-fpic --silent`
+                `./configure --silent CFLAGS=-fpic`
                 `make --silent`
 
                 #`gcc -L. -shared -o libcrlibm.$suffix *.o`

@@ -2,10 +2,20 @@
 module CRlibm
 
 # following check from Ipopt.jl:
-if isfile(joinpath(dirname(@__FILE__),"..","deps","deps.jl"))
-    include("../deps/deps.jl")
-else
-    error("CRlibm not properly installed. Please run Pkg.build(\"CRlibm\")")
+# if isfile(joinpath(dirname(@__FILE__),"..","deps","deps.jl"))
+#     include("../deps/deps.jl")
+# else
+#     error("CRlibm not properly installed. Please run Pkg.build(\"CRlibm\")")
+# end
+
+unixpath = "../deps/src/crlibm-1.0beta4/libcrlibm"
+const libcrlibm = joinpath(dirname(@__FILE__), unixpath)
+
+function __init__()
+    # Ensure library is available.
+    if (Libdl.dlopen_e(libcrlibm) == C_NULL)
+        error("CRlibm not properly installed. Run Pkg.build(\"CRlibm\")")
+    end
 end
 
 

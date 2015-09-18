@@ -77,7 +77,7 @@ floating-point numbers of **arbitrary precision**. However, it is rather slow.
 
 `CRlibm` is missing a correctly-rounded power function (`x^y`), since the fact
 that there are two arguments, instead of a single argument for functions such
-as `sin`, means that correct rounding is *much* harder; see e.g. reference [1]  [here](http://perso.ens-lyon.fr/jean-michel.muller/p1-Kornerup.pdf)
+as `sin`, means that correct rounding is *much* harder; see e.g. reference [1]  [here](http://perso.ens-lyon.fr/jean-michel.muller/p1-Kornerup.pdf).
 
 [1] P. Kornerup, C. Lauter, V. Lefèvre, N. Louvet and J.-M. Muller
 Computing Correctly Rounded Integer Powers in Floating-Point Arithmetic

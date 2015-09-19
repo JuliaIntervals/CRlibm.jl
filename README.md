@@ -43,6 +43,13 @@ julia> cos(0.5, RoundNearest)
 
 julia> cos(0.5)  # built-in
 0.8775825618903728
+
+julia> cos(1.6, RoundToZero)
+-0.029199522301288812
+
+julia> cos(1.6, RoundDown)
+-0.029199522301288815
+
 ```
 
 ## What is correct rounding?
@@ -78,13 +85,19 @@ floating-point numbers of **arbitrary precision**. However, it is rather slow.
 ## List of implemented functions
 
 All functions from `CRlibm` are wrapped, except the power function:
-- `exp`, `expm1`, `log`, `log1p`, `log2`, `log10`
-- `sin`, `cos`, `tan`, `asin`, `acos`, `atan`
+- `exp`, `expm1`
+- `log`, `log1p`, `log2`, `log10`
+- `sin`, `cos`, `tan`
+- `asin`, `acos`, `atan`
 - `sinh`, `cosh`
-- `sinpi`, `cospi`, `tanpi`, `atanpi`
+- `sinpi`, `cospi`
+- `tanpi`, `atanpi`
 
 All of these extend functions from `Base` Julia, except `tanpi` and `atanpi`,
 which are not present in `Base` and are exported by `CRlibm.jl`.
+
+The available rounding modes are `RoundNearest`, `RoundUp`, `RoundDown` and
+`RoundToZero`.
 
 ## Lacunae
 

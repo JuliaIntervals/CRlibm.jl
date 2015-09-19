@@ -37,7 +37,7 @@ for f in function_list
         @eval import Base.$f
     end
 
-    for (mode, symb) in [(:Nearest, "n"), (:Up, "u"), (:Down, "d")  ]
+    for (mode, symb) in [(:Nearest, "n"), (:Up, "u"), (:Down, "d"), (:ToZero, "z")]
 
         fname = string(f, "_r", symb)
 

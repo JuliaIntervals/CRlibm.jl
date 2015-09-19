@@ -28,7 +28,7 @@ julia> julia> set_rounding(Float64, RoundNearest)
 ```
 
 The library provides correctly-rounded versions of elementary functions such as
-`sin`, `cos`, `tan`, `exp` and `log`. They are used as follows:
+`sin`, and  `exp` (see below for a complete list). They are used as follows:
 
 
 ```julia
@@ -56,9 +56,11 @@ The result is a floating-point number that is a very good approximation to the
 true value. However, we do not know if the result that Julia gives is below or
 above the true value, nor how far away it is.
 
-Correctly-rounded functions **guarantee** that the result returned is *the next
+Correctly-rounded functions **guarantee** that when the result is not
+exactly representable as a floating-point number, the value returned is *the next
 largest* floating-point number, when rounding up, or *the next smallest* when
-rounding down.
+rounding down. This is equivalent to doing the calculation in infinite
+precision and *then* performing the rounding.
 
 ## Rationale for the Julia wrapper
 
@@ -73,9 +75,14 @@ for example, it could be used to test the quality of the `OpenLibm` functions.
 As far as we are aware, the only alternative package to `CRlibm` is [`MPFR`](http://www.mpfr.org/). This provides correctly-rounded functions for
 floating-point numbers of **arbitrary precision**. However, it is rather slow.
 
+## List of implemented functions
+
+All functions from `CRlibm` are wrapped, except the power function:
+`(exp)`, `(expm1)`, `(log)`, `(log1p)`, `(log2)`, `(log10)`, `(sin)`, `(cos)`, `(tan)`, `(asin)`, `(acos)`, `(atan)`, `(sinh)`, `(cosh)`, `(sinpi)`, `(cospi)`, `(tanpi)` and `(atanpi)`.
+
 ## Lacunae
 
-`CRlibm` is missing a correctly-rounded power function (`x^y`), since the fact
+`CRlibm` is missing a (guaranteed) correctly-rounded power function (`x^y`), since the fact
 that there are two arguments, instead of a single argument for functions such
 as `sin`, means that correct rounding is *much* harder; see e.g. reference [1]  [here](http://perso.ens-lyon.fr/jean-michel.muller/p1-Kornerup.pdf).
 
@@ -88,5 +95,4 @@ ACM Transactions on Mathematical Software **37**(1), 2010
 Departamento de Física, Facultad de Ciencias, Universidad Nacional Autónoma de México (UNAM)
 
 ## Acknowledgements ##
-Financial support is acknowledged from DGAPA-UNAM PAPIME grant PE-107114 and DGAPA-UNAM PAPIIT grant IN-117214. 
-
+Financial support is acknowledged from DGAPA-UNAM PAPIME grant PE-107114 and DGAPA-UNAM PAPIIT grant IN-117214.

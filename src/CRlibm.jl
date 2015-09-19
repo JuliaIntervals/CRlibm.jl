@@ -1,16 +1,10 @@
 
 module CRlibm
 
-# following check from Ipopt.jl:
-# if isfile(joinpath(dirname(@__FILE__),"..","deps","deps.jl"))
-#     include("../deps/deps.jl")
-# else
-#     error("CRlibm not properly installed. Please run Pkg.build(\"CRlibm\")")
-# end
-
 unixpath = "../deps/src/crlibm-1.0beta4/libcrlibm"
 const libcrlibm = joinpath(dirname(@__FILE__), unixpath)
 
+# check from Diercxk.jl (3-clause BSD license):
 function __init__()
     # Ensure library is available.
     if (Libdl.dlopen_e(libcrlibm) == C_NULL)
@@ -18,25 +12,34 @@ function __init__()
     end
 end
 
+export tanpi, atanpi
 
-# imports and exports:
+# All functions in crlibm except pow, according to section 0.4 of the PDF manual
+# (page 8); source: ./deps/src/crlibm1.0beta4/docs/latex/0_getting-started.tex,
+# section "Currently available functions"
 
-function_list = (:sin, :cos, :tan, :exp, :log)
+function_list = split("exp expm1 log log1p log2 log10 "
+                    * "sin cos tan asin acos atan "
+                    * "sinh cosh sinpi cospi tanpi atanpi"
+                    )
 
-for f in function_list
-    @eval begin
-         import Base.$f
-     end
-end
+function_list = [symbol(f) for f in function_list]
 
 
 ## Generate wrappers of CRlibm shared library:
 
+# Aiming for functions of the form
+# cos(x::Float64, ::RoundingMode{:RoundUp}) = ccall((:cos, libcrlibm), Float64, (Float64,), x)
+
 for f in function_list
+
+    if f ∉ (:tanpi, :atanpi)  # these are not in Base
+        @eval import Base.$f
+    end
+
     for (mode, symb) in [(:Nearest, "n"), (:Up, "u"), (:Down, "d")  ]
 
-        fname = symbol(f, "_r", symb)
-        fname = Expr(:quote, fname)
+        fname = string(f, "_r", symb)
 
         mode = Expr(:quote, mode)
         mode = :(::RoundingMode{$mode})

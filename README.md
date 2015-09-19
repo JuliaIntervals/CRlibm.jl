@@ -83,6 +83,9 @@ All functions from `CRlibm` are wrapped, except the power function:
 - `sinh`, `cosh`
 - `sinpi`, `cospi`, `tanpi`, `atanpi`
 
+All of these extend functions from `Base` Julia, except `tanpi` and `atanpi`,
+which are not present in `Base` and are exported by `CRlibm.jl`.
+
 ## Lacunae
 
 `CRlibm` is missing a (guaranteed) correctly-rounded power function (`x^y`), since the fact

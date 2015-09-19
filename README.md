@@ -78,7 +78,10 @@ floating-point numbers of **arbitrary precision**. However, it is rather slow.
 ## List of implemented functions
 
 All functions from `CRlibm` are wrapped, except the power function:
-`(exp)`, `(expm1)`, `(log)`, `(log1p)`, `(log2)`, `(log10)`, `(sin)`, `(cos)`, `(tan)`, `(asin)`, `(acos)`, `(atan)`, `(sinh)`, `(cosh)`, `(sinpi)`, `(cospi)`, `(tanpi)` and `(atanpi)`.
+- `exp`, `expm1`, `log`, `log1p`, `log2`, `log10`
+- `sin`, `cos`, `tan`, `asin`, `acos`, `atan`
+- `sinh`, `cosh`
+- `sinpi`, `cospi`, `tanpi`, `atanpi`
 
 ## Lacunae
 

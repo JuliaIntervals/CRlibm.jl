@@ -24,6 +24,4 @@ for f in CRlibm.function_list
 
     end
 
-
-
 end

@@ -28,7 +28,7 @@ julia> julia> set_rounding(Float64, RoundNearest)
 ```
 
 The library provides correctly-rounded versions of elementary functions such as
-`sin`, and  `exp` (see below for a complete list). They are used as follows:
+`sin`, and  `exp` (see [below](#list-of-implemented-functions) for a complete list). They are used as follows:
 
 
 ```julia
@@ -51,6 +51,24 @@ julia> cos(1.6, RoundDown)
 -0.029199522301288815
 
 ```
+
+## List of implemented functions
+
+All functions from `CRlibm` are wrapped, except the power function:
+- `exp`, `expm1`
+- `log`, `log1p`, `log2`, `log10`
+- `sin`, `cos`, `tan`
+- `asin`, `acos`, `atan`
+- `sinh`, `cosh`
+- `sinpi`, `cospi`
+- `tanpi`, `atanpi`
+
+All of these extend functions from `Base` Julia, except `tanpi` and `atanpi`,
+which are not present in `Base` and are exported by `CRlibm.jl`.
+
+The available rounding modes are `RoundNearest`, `RoundUp`, `RoundDown` and
+`RoundToZero`.
+
 
 ## What is correct rounding?
 Suppose that we ask Julia to calculate the cosine of a number:
@@ -77,28 +95,6 @@ functions of `Float64` arguments. It is required for our interval arithmetic lib
 Having gone to the trouble of wrapping it, it made sense to release it separately;
 for example, it could be used to test the quality of the `OpenLibm` functions.
 
-## Alternatives to `CRlibm`
-
-As far as we are aware, the only alternative package to `CRlibm` is [`MPFR`](http://www.mpfr.org/). This provides correctly-rounded functions for
-floating-point numbers of **arbitrary precision**. However, it is rather slow.
-
-## List of implemented functions
-
-All functions from `CRlibm` are wrapped, except the power function:
-- `exp`, `expm1`
-- `log`, `log1p`, `log2`, `log10`
-- `sin`, `cos`, `tan`
-- `asin`, `acos`, `atan`
-- `sinh`, `cosh`
-- `sinpi`, `cospi`
-- `tanpi`, `atanpi`
-
-All of these extend functions from `Base` Julia, except `tanpi` and `atanpi`,
-which are not present in `Base` and are exported by `CRlibm.jl`.
-
-The available rounding modes are `RoundNearest`, `RoundUp`, `RoundDown` and
-`RoundToZero`.
-
 ## Lacunae
 
 `CRlibm` is missing a (guaranteed) correctly-rounded power function (`x^y`), since the fact
@@ -108,6 +104,31 @@ as `sin`, means that correct rounding is *much* harder; see e.g. reference [1]  
 [1] P. Kornerup, C. Lauter, V. Lefèvre, N. Louvet and J.-M. Muller
 Computing Correctly Rounded Integer Powers in Floating-Point Arithmetic
 ACM Transactions on Mathematical Software **37**(1), 2010
+
+## `MPFR` as an alternative to `CRlibm`
+
+As far as we are aware, the only alternative package to `CRlibm` is [`MPFR`](http://www.mpfr.org/). This provides correctly-rounded functions for
+floating-point numbers of **arbitrary precision**, *including* the power function. However, it can be slow.
+
+MPFR is wrapped in base Julia in the `BigFloat` type. It can emulate double-precision floating point by setting the precision to 53 bits, and using `with_bigfloat_rounding`:
+
+```julia
+julia> set_bigfloat_precision(53)
+53
+
+julia> b = with_rounding(BigFloat, RoundDown) do
+           a = parse(BigFloat, "2.1")
+           a^3
+       end
+9.2609999999999939
+
+julia> c = with_rounding(BigFloat, RoundUp) do
+           a = parse(BigFloat, "2.1")
+           a^3
+       end
+9.2610000000000028
+
+```
 
 ## Author
 - [David P. Sanders](http://sistemas.fciencias.unam.mx/~dsanders),

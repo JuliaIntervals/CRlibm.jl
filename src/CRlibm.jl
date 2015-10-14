@@ -12,9 +12,10 @@ function __init__()
     # Ensure library is available.
     if (Libdl.dlopen_e(libcrlibm) == C_NULL)
         warn("CRlibm not properly installed. Try running Pkg.build(\"CRlibm\") to fix it. Falling back to use MPFR. Note that Windows is not yet supported.")
+
+        use_MPFR = true
     end
 
-    use_MPFR = true
 end
 
 export tanpi, atanpi
@@ -37,13 +38,14 @@ function_list = [symbol(f) for f in function_list]
 # cos(x::Float64, ::RoundingMode{:RoundUp}) = ccall((:cos, libcrlibm), Float64, (Float64,), x)
 
 
+MPFR_function_list = split("exp expm1 log log1p log2 log10 "
+                    * "sin cos tan asin acos atan "
+                    * "sinh cosh")
+
+MPFR_function_list = [symbol(f) for f in MPFR_function_list]
+
 function wrap_MPFR()
-
-    MPFR_function_list = split("exp expm1 log log1p log2 log10 "
-                        * "sin cos tan asin acos atan "
-                        * "sinh cosh")
-
-    MPFR_function_list = [symbol(f) for f in function_list]
+    # stopgap until included in Base
 
     ## Generate versions of functions for MPFR until included in Base
 
@@ -97,12 +99,6 @@ function wrap_CRlibm()
     end
 end
 
-function big53(x::Float64)
-    with_bigfloat_precision(53) do
-        BigFloat(x)
-    end
-end
-
 function shadow_MPFR()
     for f in function_list
 
@@ -121,7 +117,12 @@ function shadow_MPFR()
 
             mode2 = symbol("Round", string(mode))
 
-            @eval ($f)(x::Float64, $mode1) = Float64(($f)(big53(x), $mode2))
+            @eval function ($f)(x::Float64, $mode1)
+                with_bigfloat_precision(53) do
+                    Float64(($f)(BigFloat(x), $mode2))
+                end
+            end
+            # use the functions that were previously defined for BigFloat
 
         end
     end

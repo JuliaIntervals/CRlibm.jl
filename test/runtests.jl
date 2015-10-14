@@ -18,40 +18,65 @@ end
 
 is_log(f) = string(f)[1:3] == "log"
 
-for f in CRlibm.function_list
-    println("Testing CRlibm.$f")
+function do_test(f, val)
+    a = f(val, RoundDown)
+    b = f(val, RoundUp)
+    @test b - a == eps(a) || b - a == eps(b)
+end
 
-    ff = eval(f)  # the actual Julia function
+function test_CRlibm(function_list)
+    @show function_list
+    for f in function_list
+        println("Testing CRlibm.$f")
 
-    for val in (0.51, 103.2, -17.1, -0.00005)
-        #print(val, " ")
+        ff = eval(f)  # the actual Julia function
 
-        val <= 0.0 && is_log(f) && continue
-        abs(val) > 1 && f ∈ (:asin, :acos) && continue
+        for val in (0.51, 103.2, -17.1, -0.00005)
 
+            @show f, val
 
-        a = ff(val, RoundDown)
-        b = ff(val, RoundUp)
-        @test b - a == eps(a)
+            val <= 0.0 && is_log(f) && continue
+            abs(val) > 1 && f ∈ (:asin, :acos) && continue
 
-        if f ∈ (:sinpi, :cospi, :tanpi, :atanpi)  # not in MPFR
-            continue
+            do_test(ff, val)
         end
+    end
+end
 
-        for prec in (20, 100, 1000)
+function test_MPFR()
+    for f in CRlibm.MPFR_function_list
+        println("Testing CRlibm.$f")
 
-            with_bigfloat_precision(prec) do
-                val = BigFloat(val)
-                a = ff(val, RoundDown)
-                b = ff(val, RoundUp)
+        ff = eval(f)  # the actual Julia function
 
-                @test b - a == my_eps(a) || b - a == my_eps(b)
+        for val in (0.51, 103.2, -17.1, -0.00005)
+            #print(val, " ")
+
+            @show f, val
+
+            val <= 0.0 && is_log(f) && continue
+            abs(val) > 1 && f ∈ (:asin, :acos) && continue
+
+            for prec in (20, 100, 1000)
+
+                with_bigfloat_precision(prec) do
+                    val = BigFloat(val)
+                    do_test(ff, val)
+                end
+
             end
         end
-
-
-
-
     end
-
 end
+
+
+
+println("Testing CRlibm")
+test_CRlibm(CRlibm.function_list)
+CRlibm.shadow_MPFR()
+
+println("Testing shadowing MPFR")
+test_CRlibm(CRlibm.MPFR_function_list)
+
+println("Testing MPFR")
+test_MPFR()

@@ -130,6 +130,21 @@ julia> c = with_rounding(BigFloat, RoundUp) do
 
 ```
 
+Version 0.2 of `CRlibm` wraps the MPFR functions with the same extended syntax with rounding modes, so that we can do
+```julia
+julia> set_bigfloat_precision(64)
+64
+
+julia> exp(BigFloat(0.51), RoundDown)
+1.66529119494588632316
+
+julia> exp(BigFloat(0.51), RoundUp)
+1.66529119494588632327
+```
+
+The function `CRlibm.shadow_MPFR()` can be called to redefine the functions that take floating-point arguments to also use the MPFR versions. This is done automatically if the `CRlibm` library is not available.
+
+
 ## Author
 - [David P. Sanders](http://sistemas.fciencias.unam.mx/~dsanders),
 Departamento de Física, Facultad de Ciencias, Universidad Nacional Autónoma de México (UNAM)

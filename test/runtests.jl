@@ -18,40 +18,67 @@ end
 
 is_log(f) = string(f)[1:3] == "log"
 
-for f in CRlibm.function_list
-    println("Testing CRlibm.$f")
+function do_test(f, val)
+    a = f(val, RoundDown)
+    b = f(val, RoundUp)
+    @test b - a == eps(a) || b - a == eps(b)
+end
 
-    for val in (0.51, 103.2, -17.1, -0.00005)
-        #print(val, " ")
-
-        val <= 0.0 && is_log(f) && continue
-        abs(val) > 1 && f ∈ (:asin, :acos) && continue
+function test_CRlibm(function_list)
+    @show function_list
+    for f in function_list
+        println("Testing CRlibm.$f")
 
         ff = eval(f)  # the actual Julia function
 
-        a = ff(val, RoundDown)
-        b = ff(val, RoundUp)
-        @test b - a == eps(a)
+        for val in (0.51, 103.2, -17.1, -0.00005)
 
-        if f ∈ (:sinpi, :cospi, :tanpi, :atanpi)  # not in MPFR
-            continue
+            #@show f, val
+
+            val <= 0.0 && is_log(f) && continue
+            abs(val) > 1 && f ∈ (:asin, :acos) && continue
+
+            do_test(ff, val)
         end
+    end
+end
 
-        for prec in (20, 100, 1000)
-            @show prec, val
-            with_bigfloat_precision(prec) do
-                val = BigFloat(val)
-                a = ff(val, RoundDown)
-                b = ff(val, RoundUp)
+function test_MPFR()
+    for f in CRlibm.MPFR_function_list
+        println("Testing CRlibm.$f")
 
-                @show a, b
-                @test b - a == my_eps(a) || b - a == my_eps(b)
+        ff = eval(f)  # the actual Julia function
+
+        for val in (0.51, 103.2, -17.1, -0.00005)
+            #print(val, " ")
+
+            #@show f, val
+
+            val <= 0.0 && is_log(f) && continue
+            abs(val) > 1 && f ∈ (:asin, :acos) && continue
+
+            for prec in (20, 100, 1000)
+
+                with_bigfloat_precision(prec) do
+                    val = BigFloat(val)
+                    do_test(ff, val)
+                end
+
             end
         end
-
-
-
-
     end
-
 end
+
+
+
+println("Testing CRlibm")
+test_CRlibm(CRlibm.function_list)
+# This will currently fail on the :sinpi etc. functions (that are not defined in MPFR) if MPFR is already enabled because the CRlibm library could not be found
+
+
+println("Testing shadowing MPFR")
+CRlibm.shadow_MPFR()
+test_CRlibm(CRlibm.MPFR_function_list)
+
+println("Testing MPFR")
+test_MPFR()

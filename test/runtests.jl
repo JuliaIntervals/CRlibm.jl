@@ -73,9 +73,11 @@ end
 
 println("Testing CRlibm")
 test_CRlibm(CRlibm.function_list)
-CRlibm.shadow_MPFR()
+# This will currently fail on the :sinpi etc. functions (that are not defined in MPFR) if MPFR is already enabled because the CRlibm library could not be found
+
 
 println("Testing shadowing MPFR")
+CRlibm.shadow_MPFR()
 test_CRlibm(CRlibm.MPFR_function_list)
 
 println("Testing MPFR")

@@ -33,6 +33,10 @@ for f in CRlibm.function_list
         b = ff(val, RoundUp)
         @test b - a == eps(a)
 
+        if f ∈ (:sinpi, :cospi, :tanpi, :atanpi)  # not in MPFR
+            continue
+        end
+
         for prec in (20, 100, 1000)
             @show prec, val
             with_bigfloat_precision(prec) do
@@ -41,7 +45,7 @@ for f in CRlibm.function_list
                 b = ff(val, RoundUp)
 
                 @show a, b
-                @test b - a == my_eps(a)
+                @test b - a == my_eps(a) || b - a == my_eps(b)
             end
         end
 

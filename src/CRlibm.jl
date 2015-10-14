@@ -55,7 +55,7 @@ end
 
 MPFR_function_list = split("exp expm1 log log1p log2 log10 "
                     * "sin cos tan asin acos atan "
-                    * "sinh cosh sinpi cospi")
+                    * "sinh cosh")
 
 MPFR_function_list = [symbol(f) for f in function_list]
 

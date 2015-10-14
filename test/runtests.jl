@@ -33,7 +33,7 @@ function test_CRlibm(function_list)
 
         for val in (0.51, 103.2, -17.1, -0.00005)
 
-            @show f, val
+            #@show f, val
 
             val <= 0.0 && is_log(f) && continue
             abs(val) > 1 && f ∈ (:asin, :acos) && continue
@@ -52,7 +52,7 @@ function test_MPFR()
         for val in (0.51, 103.2, -17.1, -0.00005)
             #print(val, " ")
 
-            @show f, val
+            #@show f, val
 
             val <= 0.0 && is_log(f) && continue
             abs(val) > 1 && f ∈ (:asin, :acos) && continue

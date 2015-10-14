@@ -21,13 +21,14 @@ is_log(f) = string(f)[1:3] == "log"
 for f in CRlibm.function_list
     println("Testing CRlibm.$f")
 
+    ff = eval(f)  # the actual Julia function
+
     for val in (0.51, 103.2, -17.1, -0.00005)
         #print(val, " ")
 
         val <= 0.0 && is_log(f) && continue
         abs(val) > 1 && f ∈ (:asin, :acos) && continue
 
-        ff = eval(f)  # the actual Julia function
 
         a = ff(val, RoundDown)
         b = ff(val, RoundUp)
@@ -38,13 +39,12 @@ for f in CRlibm.function_list
         end
 
         for prec in (20, 100, 1000)
-            @show prec, val
+
             with_bigfloat_precision(prec) do
                 val = BigFloat(val)
                 a = ff(val, RoundDown)
                 b = ff(val, RoundUp)
 
-                @show a, b
                 @test b - a == my_eps(a) || b - a == my_eps(b)
             end
         end

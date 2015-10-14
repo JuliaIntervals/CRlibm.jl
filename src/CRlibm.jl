@@ -67,9 +67,7 @@ function wrap_MPFR()
 
             @eval function $(f)(x::BigFloat, $mode1)
                 with_rounding(BigFloat, $mode2) do
-                    with_bigfloat_precision(precision(x)) do
-                        $(f)(x)
-                    end
+                    $(f)(x)
                 end
             end
 

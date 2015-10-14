@@ -5,11 +5,16 @@ unixpath = "../deps/src/crlibm-1.0beta4/libcrlibm"
 const libcrlibm = joinpath(dirname(@__FILE__), unixpath)
 
 # check from Diercxk.jl (3-clause BSD license):
+
+use_MPFR = false
+
 function __init__()
     # Ensure library is available.
     if (Libdl.dlopen_e(libcrlibm) == C_NULL)
-        error("CRlibm not properly installed. Run Pkg.build(\"CRlibm\")")
+        warn("CRlibm not properly installed. Try running Pkg.build(\"CRlibm\") to fix it. Falling back to use MPFR. Note that Windows is not yet supported.")
     end
+
+    use_MPFR = true
 end
 
 export tanpi, atanpi
@@ -31,60 +36,109 @@ function_list = [symbol(f) for f in function_list]
 # Aiming for functions of the form
 # cos(x::Float64, ::RoundingMode{:RoundUp}) = ccall((:cos, libcrlibm), Float64, (Float64,), x)
 
-for f in function_list
 
-    if f ∉ (:tanpi, :atanpi)  # these are not in Base
-        @eval import Base.$f
-    end
+function wrap_MPFR()
 
-    for (mode, symb) in [(:Nearest, "n"), (:Up, "u"), (:Down, "d"),
-                         (:ToZero, "z")
-                        ]
+    MPFR_function_list = split("exp expm1 log log1p log2 log10 "
+                        * "sin cos tan asin acos atan "
+                        * "sinh cosh")
 
-        fname = string(f, "_r", symb)
+    MPFR_function_list = [symbol(f) for f in function_list]
 
-        mode = Expr(:quote, mode)
-        mode = :(::RoundingMode{$mode})
+    ## Generate versions of functions for MPFR until included in Base
 
-        @eval ($f)(x::Float64, $mode) = ccall(($fname, libcrlibm), Float64, (Float64,), x)
-    end
-end
+    for f in MPFR_function_list
 
-
-# MPFR functions:
-
-MPFR_function_list = split("exp expm1 log log1p log2 log10 "
-                    * "sin cos tan asin acos atan "
-                    * "sinh cosh")
-
-MPFR_function_list = [symbol(f) for f in function_list]
-
-## Generate versions of functions for MPFR until included in Base
-
-for f in MPFR_function_list
-
-    for (mode, symb) in [(:Nearest, "n"), (:Up, "u"), (:Down, "d"),
-                         (:ToZero, "z")
-                         ]
-
-        fname = string(f, "_r", symb)
-
-        mode1 = Expr(:quote, mode)
-        mode1 = :(::RoundingMode{$mode1})
-
-        mode_string = string("Round", mode)
-        mode2 = symbol(mode_string)
-
-        @eval function $(f)(x::BigFloat, $mode1)
-            with_rounding(BigFloat, $mode2) do
-                with_bigfloat_precision(precision(x)) do
-                    $(f)(x)
-                end
-            end
+        if f ∉ (:tanpi, :atanpi)  # these are not in Base
+            @eval import Base.$f
         end
 
+        for (mode, symb) in [(:Nearest, "n"), (:Up, "u"), (:Down, "d"),
+                             (:ToZero, "z")
+                             ]
+
+            fname = string(f, "_r", symb)
+
+            mode1 = Expr(:quote, mode)
+            mode1 = :(::RoundingMode{$mode1})
+
+            mode_string = string("Round", mode)
+            mode2 = symbol(mode_string)
+
+            @eval function $(f)(x::BigFloat, $mode1)
+                with_rounding(BigFloat, $mode2) do
+                    with_bigfloat_precision(precision(x)) do
+                        $(f)(x)
+                    end
+                end
+            end
+
+        end
+    end
+
+end
+
+function wrap_CRlibm()
+    for f in function_list
+
+        if f ∉ (:tanpi, :atanpi)  # these are not in Base
+            @eval import Base.$f
+        end
+
+        for (mode, symb) in [(:Nearest, "n"), (:Up, "u"), (:Down, "d"),
+                             (:ToZero, "z")
+                            ]
+
+            fname = string(f, "_r", symb)
+
+            mode = Expr(:quote, mode)
+            mode = :(::RoundingMode{$mode})
+
+            @eval ($f)(x::Float64, $mode) = ccall(($fname, libcrlibm), Float64, (Float64,), x)
+        end
     end
 end
+
+function big53(x::Float64)
+    with_bigfloat_precision(53) do
+        BigFloat(x)
+    end
+end
+
+function shadow_MPFR()
+    for f in function_list
+
+        if f ∉ (:sinpi, :cospi, :tanpi, :atanpi)  # these are not in Base
+            @eval import Base.$f
+        end
+
+        for (mode, symb) in [(:Nearest, "n"), (:Up, "u"), (:Down, "d"),
+                             (:ToZero, "z")
+                            ]
+
+            fname = string(f, "_r", symb)
+
+            mode1 = Expr(:quote, mode)
+            mode1 = :(::RoundingMode{$mode1})
+
+            mode2 = symbol("Round", string(mode))
+
+            @eval ($f)(x::Float64, $mode1) = Float64(($f)(big53(x), $mode2))
+
+        end
+    end
+end
+
+
+
+wrap_MPFR()
+
+if !use_MPFR
+    wrap_CRlibm()
+else
+    shadow_MPFR()
+end
+
 
 
 end # module

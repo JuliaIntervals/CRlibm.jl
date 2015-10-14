@@ -7,6 +7,14 @@ using Base.Test
 @test cos(1.6, RoundToZero) == -0.029199522301288812
 @test cos(1.6, RoundDown) == -0.029199522301288815
 
+function my_eps(prec::Int)
+    ldexp(eps(Float64), 53-prec)
+end
+
+function my_eps(x::BigFloat)  # only works for precision >= 10?
+    my_eps(precision(x) - exponent(x))
+end
+
 
 is_log(f) = string(f)[1:3] == "log"
 
@@ -20,7 +28,29 @@ for f in CRlibm.function_list
         abs(val) > 1 && f ∈ (:asin, :acos) && continue
 
         ff = eval(f)  # the actual Julia function
-        @test ff(val, RoundUp) - ff(val, RoundDown) == eps(ff(val, RoundDown))
+
+        a = ff(val, RoundDown)
+        b = ff(val, RoundUp)
+        @test b - a == eps(a)
+
+        if f ∈ (:sinpi, :cospi, :tanpi, :atanpi)  # not in MPFR
+            continue
+        end
+
+        for prec in (20, 100, 1000)
+            @show prec, val
+            with_bigfloat_precision(prec) do
+                val = BigFloat(val)
+                a = ff(val, RoundDown)
+                b = ff(val, RoundUp)
+
+                @show a, b
+                @test b - a == my_eps(a) || b - a == my_eps(b)
+            end
+        end
+
+
+
 
     end
 

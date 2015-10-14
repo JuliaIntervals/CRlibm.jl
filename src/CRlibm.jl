@@ -37,7 +37,9 @@ for f in function_list
         @eval import Base.$f
     end
 
-    for (mode, symb) in [(:Nearest, "n"), (:Up, "u"), (:Down, "d"), (:ToZero, "z")]
+    for (mode, symb) in [(:Nearest, "n"), (:Up, "u"), (:Down, "d"),
+                         (:ToZero, "z")
+                        ]
 
         fname = string(f, "_r", symb)
 
@@ -45,6 +47,42 @@ for f in function_list
         mode = :(::RoundingMode{$mode})
 
         @eval ($f)(x::Float64, $mode) = ccall(($fname, libcrlibm), Float64, (Float64,), x)
+    end
+end
+
+
+# MPFR functions:
+
+MPFR_function_list = split("exp expm1 log log1p log2 log10 "
+                    * "sin cos tan asin acos atan "
+                    * "sinh cosh")
+
+MPFR_function_list = [symbol(f) for f in function_list]
+
+## Generate versions of functions for MPFR until included in Base
+
+for f in MPFR_function_list
+
+    for (mode, symb) in [(:Nearest, "n"), (:Up, "u"), (:Down, "d"),
+                         (:ToZero, "z")
+                         ]
+
+        fname = string(f, "_r", symb)
+
+        mode1 = Expr(:quote, mode)
+        mode1 = :(::RoundingMode{$mode1})
+
+        mode_string = string("Round", mode)
+        mode2 = symbol(mode_string)
+
+        @eval function $(f)(x::BigFloat, $mode1)
+            with_rounding(BigFloat, $mode2) do
+                with_bigfloat_precision(precision(x)) do
+                    $(f)(x)
+                end
+            end
+        end
+
     end
 end
 

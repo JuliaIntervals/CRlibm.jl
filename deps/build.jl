@@ -7,7 +7,7 @@
 suffix = ""
 
 @unix_only begin
-    download = @osx ? `curl -O` : `wget`
+    my_download = @osx ? `curl -O` : `wget`
     suffix = @osx ? "dylib" : "so"
 end
 
@@ -22,11 +22,13 @@ cd(src_dir)
 
 file = "http://lipforge.ens-lyon.fr/frs/download.php/162/$(lib_name).tar.gz"
 
+println("Downloading the library files from $file")
 println("Working in ", pwd())
 
 
-run(`$(download) $file`)
-run(`tar xzvf $(lib_name).tar.gz`)
+run(`$(my_download) $file`)
+#download(file)
+run(`tar xzf $(lib_name).tar.gz`)
 
 #srcdir = "$(src_dir)/$(lib_name)"
 
@@ -34,8 +36,8 @@ cd(lib_name)
 println("Working in ", pwd())
 
 suffix = @osx? "dylib" : "so"
-run(`./configure CFLAGS=-fpic`)
+run(`./configure CFLAGS=-fpic --enable-silent-rules --silent`)
 println("Working in ", pwd())
 
-run(`make`)
-run(`make -f ../shared.mk SUFFIX=$suffix`)
+run(`make -s V=0`)
+run(`make -s -f ../shared.mk SUFFIX=$suffix V=0`)

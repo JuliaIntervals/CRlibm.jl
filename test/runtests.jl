@@ -27,7 +27,7 @@ end
 function test_CRlibm(function_list)
     @show function_list
     for f in function_list
-        println("Testing CRlibm.$f")
+        #println("Testing CRlibm.$f")
 
         ff = eval(f)  # the actual Julia function
 
@@ -45,7 +45,7 @@ end
 
 function test_MPFR()
     for f in CRlibm.MPFR_function_list
-        println("Testing CRlibm.$f")
+        #println("Testing CRlibm.$f")
 
         ff = eval(f)  # the actual Julia function
 

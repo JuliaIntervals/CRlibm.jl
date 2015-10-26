@@ -36,7 +36,7 @@ cd(lib_name)
 println("Working in ", pwd())
 
 suffix = @osx? "dylib" : "so"
-run(`./configure CFLAGS=-fpic --enable-silent-rules --silent`)
+run(`./configure CFLAGS=-fpic --silent`)
 println("Working in ", pwd())
 
 run(`make -s V=0`)

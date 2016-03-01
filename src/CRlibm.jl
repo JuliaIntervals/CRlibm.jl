@@ -1,6 +1,8 @@
 
 module CRlibm
 
+using Compat
+
 unixpath = "../deps/src/crlibm-1.0beta4/libcrlibm"
 const libcrlibm = joinpath(dirname(@__FILE__), unixpath)
 
@@ -68,7 +70,7 @@ function wrap_MPFR()
             mode2 = symbol(mode_string)
 
             @eval function $(f)(x::BigFloat, $mode1)
-                with_rounding(BigFloat, $mode2) do
+                setrounding(BigFloat, $mode2) do
                     $(f)(x)
                 end
             end

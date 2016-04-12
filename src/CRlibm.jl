@@ -26,10 +26,11 @@ export tanpi, atanpi
 # (page 8); source: ./deps/src/crlibm1.0beta4/docs/latex/0_getting-started.tex,
 # section "Currently available functions"
 
-function_list = split("exp expm1 log log1p log2 log10 "
-                    * "sin cos tan asin acos atan "
-                    * "sinh cosh sinpi cospi tanpi atanpi"
-                    )
+function_list = split("""exp expm1 log log1p log2 log10
+                         sin cos tan asin acos atan
+                         sinh cosh sinpi cospi tanpi atanpi
+                      """)
+
 
 function_list = [symbol(f) for f in function_list]
 
@@ -40,9 +41,10 @@ function_list = [symbol(f) for f in function_list]
 # cos(x::Float64, ::RoundingMode{:RoundUp}) = ccall((:cos, libcrlibm), Float64, (Float64,), x)
 
 
-MPFR_function_list = split("exp expm1 log log1p log2 log10 "
-                    * "sin cos tan asin acos atan "
-                    * "sinh cosh")
+MPFR_function_list = split("""exp expm1 log log1p log2 log10
+                              sin cos tan asin acos atan
+                              sinh cosh
+                           """)
 
 MPFR_function_list = [symbol(f) for f in MPFR_function_list]
 
@@ -120,7 +122,7 @@ function shadow_MPFR()
             mode2 = symbol("Round", string(mode))
 
             @eval function ($f)(x::Float64, $mode1)
-                with_bigfloat_precision(53) do
+                setprecision(BigFloat, 53) do
                     Float64(($f)(BigFloat(x), $mode2))
                 end
             end

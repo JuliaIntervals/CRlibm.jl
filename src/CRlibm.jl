@@ -46,6 +46,7 @@ MPFR_function_list = split("exp expm1 log log1p log2 log10 "
 
 MPFR_function_list = [symbol(f) for f in MPFR_function_list]
 
+
 function wrap_MPFR()
     # stopgap until included in Base
 
@@ -74,13 +75,14 @@ function wrap_MPFR()
                     $(f)(x)
                 end
             end
-
         end
+
     end
 
 end
 
 function wrap_CRlibm()
+
     for f in function_list
 
         if f ∉ (:tanpi, :atanpi)  # these are not in Base
@@ -99,6 +101,7 @@ function wrap_CRlibm()
             @eval ($f)(x::Float64, $mode) = ccall(($fname, libcrlibm), Float64, (Float64,), x)
         end
     end
+
 end
 
 function shadow_MPFR()
@@ -131,6 +134,15 @@ function shadow_MPFR()
 end
 
 
+function wrap_generic_fallbacks()
+    # avoid ambiguous definition:
+    log(::Type{Base.Irrational{:e}}, r::RoundingMode) = 1   # this definition is consistent with Base
+
+    for f in function_list
+        @eval ($f)(x::Real, r::RoundingMode) = ($f)(float(x), r)
+    end
+end
+
 
 wrap_MPFR()
 
@@ -139,6 +151,9 @@ if !use_MPFR
 else
     shadow_MPFR()
 end
+
+wrap_generic_fallbacks()
+
 
 
 

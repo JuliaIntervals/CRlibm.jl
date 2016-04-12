@@ -1,4 +1,6 @@
 using CRlibm
+using Compat
+
 using Base.Test
 
 @test cos(0.5, RoundDown) == 0.8775825618903726
@@ -21,7 +23,7 @@ is_log(f) = string(f)[1:3] == "log"
 function do_test(f, val)
     a = f(val, RoundDown)
     b = f(val, RoundUp)
-    @test b - a == eps(a) || b - a == eps(b)
+    @test b - a == eps(a) || b - a == eps(b) || b - a == 0
 end
 
 function test_CRlibm(function_list)
@@ -31,7 +33,7 @@ function test_CRlibm(function_list)
 
         ff = eval(f)  # the actual Julia function
 
-        for val in (0.51, 103.2, -17.1, -0.00005)
+        for val in (0.51, 103.2, -17.1, -0.00005, 1)
 
             #@show f, val
 
@@ -59,7 +61,7 @@ function test_MPFR()
 
             for prec in (20, 100, 1000)
 
-                with_bigfloat_precision(prec) do
+                setprecision(BigFloat, prec) do
                     val = BigFloat(val)
                     do_test(ff, val)
                 end

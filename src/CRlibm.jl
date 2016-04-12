@@ -136,7 +136,7 @@ end
 
 function wrap_generic_fallbacks()
     # avoid ambiguous definition:
-    log(::Type{Base.Irrational{:e}}, r::RoundingMode) = 1   # this definition is consistent with Base
+    log(x::Irrational{:e}, r::RoundingMode) = 1   # this definition is consistent with Base
 
     for f in function_list
         @eval ($f)(x::Real, r::RoundingMode) = ($f)(float(x), r)

@@ -1,4 +1,6 @@
 using CRlibm
+using Compat
+
 using Base.Test
 
 @test cos(0.5, RoundDown) == 0.8775825618903726

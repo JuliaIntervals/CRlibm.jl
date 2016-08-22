@@ -13,7 +13,9 @@ use_MPFR = false
 function __init__()
     # Ensure library is available.
     if (Libdl.dlopen_e(libcrlibm) == C_NULL)
-        warn("CRlibm not properly installed. Try running Pkg.build(\"CRlibm\") to fix it. Falling back to use MPFR. Note that Windows is not yet supported.")
+        warn("CRlibm not properly installed; falling back to use MPFR.
+        This is currently the default on Windows. The package should still
+        work correctly, but will be slower.")
 
         use_MPFR = true
     end

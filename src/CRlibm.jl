@@ -32,7 +32,7 @@ function_list = split("""exp expm1 log log1p log2 log10
                       """)
 
 
-function_list = [symbol(f) for f in function_list]
+@compat function_list = [Symbol(f) for f in function_list]
 
 
 ## Generate wrappers of CRlibm shared library:
@@ -46,7 +46,7 @@ MPFR_function_list = split("""exp expm1 log log1p log2 log10
                               sinh cosh
                            """)
 
-MPFR_function_list = [symbol(f) for f in MPFR_function_list]
+@compat MPFR_function_list = [Symbol(f) for f in MPFR_function_list]
 
 
 function wrap_MPFR()
@@ -70,7 +70,7 @@ function wrap_MPFR()
             mode1 = :(::RoundingMode{$mode1})
 
             mode_string = string("Round", mode)
-            mode2 = symbol(mode_string)
+            @compat mode2 = Symbol(mode_string)
 
             @eval function $(f)(x::BigFloat, $mode1)
                 setrounding(BigFloat, $mode2) do
@@ -122,7 +122,7 @@ function shadow_MPFR()
             mode1 = Expr(:quote, mode)
             mode1 = :(::RoundingMode{$mode1})
 
-            mode2 = symbol("Round", string(mode))
+            @compat mode2 = Symbol("Round", string(mode))
 
             @eval function ($f)(x::Float64, $mode1)
                 setprecision(BigFloat, 53) do

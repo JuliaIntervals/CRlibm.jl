@@ -122,7 +122,7 @@ function shadow_MPFR()
             mode1 = Expr(:quote, mode)
             mode1 = :(::RoundingMode{$mode1})
 
-            @compat mode2 = Symbol("Round", string(mode))
+            mode2 = Symbol("Round", string(mode))
 
             @eval function ($f)(x::Float64, $mode1)
                 setprecision(BigFloat, 53) do

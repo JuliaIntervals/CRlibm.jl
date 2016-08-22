@@ -12,7 +12,9 @@ suffix = ""
 end
 
 @windows_only begin
-    error("Package not currently available on Windows")
+    warn("On Windows, CRlibm just acts as a wrapper of MPFR, and will be
+    slow.")
+    exit(0)
 end
 
 lib_name = "crlibm-1.0beta4"

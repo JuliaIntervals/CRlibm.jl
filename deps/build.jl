@@ -6,14 +6,13 @@
 
 suffix = ""
 
-@unix_only begin
-    my_download = @osx ? `curl -O` : `wget`
-    suffix = @osx ? "dylib" : "so"
+@compat @static if is_unix() begin
+    my_download = is_apple() ? `curl -O` : `wget`
+    suffix = is_apple() ? "dylib" : "so"
 end
 
-@windows_only begin
-    warn("On Windows, CRlibm just acts as a wrapper of MPFR, and will be
-    slow.")
+@compat @static if is_windows() begin
+    warn("On Windows, CRlibm just wraps MPFR, and hence is slow.")
     exit(0)
 end
 
@@ -37,7 +36,7 @@ run(`tar xzf $(lib_name).tar.gz`)
 cd(lib_name)
 println("Working in ", pwd())
 
-suffix = @osx? "dylib" : "so"
+suffix = is_apple() ? "dylib" : "so"
 run(`./configure CFLAGS=-fpic --silent`)
 println("Working in ", pwd())
 

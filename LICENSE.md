@@ -1,6 +1,6 @@
-The CRlibm.jl package is licensed under the MIT "Expat" License:
+The `CRlibm.jl` package is licensed under the MIT "Expat" License:
 
-> Copyright (c) 2015: David P. Sanders.
+> Copyright (c) 2015-16: David P. Sanders.
 >
 > Permission is hereby granted, free of charge, to any person obtaining
 > a copy of this software and associated documentation files (the
@@ -20,3 +20,7 @@ The CRlibm.jl package is licensed under the MIT "Expat" License:
 > CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT,
 > TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
 > SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+
+
+`CRlibm.jl` wraps the `CRlibm` package, which is licensed under LGPL, as stated on the
+project homepage: http://lipforge.ens-lyon.fr/www/crlibm/

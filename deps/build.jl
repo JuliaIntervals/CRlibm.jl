@@ -12,7 +12,7 @@ suffix = ""
 end
 
 @compat @static if is_windows() begin
-    warn("On Windows, CRlibm just wraps MPFR, and hence is slow.")
+    warn("On Windows, CRlibm currently just wraps MPFR, and so is slow.")
     exit(0)
 end
 

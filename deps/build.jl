@@ -7,7 +7,7 @@ using Compat
 
 if is_windows()
     warn("On Windows, CRlibm currently just wraps MPFR, and so is slow.")
-    exit(1)
+    exit(0)
 end
 #end
 

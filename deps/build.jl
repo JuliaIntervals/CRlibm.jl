@@ -17,18 +17,9 @@ end
 end
 
 lib_name = "crlibm-1.0beta4"
-
 src_dir = "src"
 cd(src_dir)
 
-file = "http://lipforge.ens-lyon.fr/frs/download.php/162/$(lib_name).tar.gz"
-
-println("Downloading the library files from $file")
-println("Working in ", pwd())
-
-
-run(`$(my_download) $file`)
-#download(file)
 run(`tar xzf $(lib_name).tar.gz`)
 
 #srcdir = "$(src_dir)/$(lib_name)"

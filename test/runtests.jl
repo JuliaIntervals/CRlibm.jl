@@ -26,9 +26,9 @@ function do_test(f, val)
     @test b - a == eps(a) || b - a == eps(b) || b - a == 0
 end
 
-function test_CRlibm(function_list)
-    @show function_list
-    for f in function_list
+function test_CRlibm(functions)
+    @show functions
+    for f in functions
         #println("Testing CRlibm.$f")
 
         ff = eval(f)  # the actual Julia function
@@ -46,7 +46,7 @@ function test_CRlibm(function_list)
 end
 
 function test_MPFR()
-    for f in CRlibm.MPFR_function_list
+    for f in CRlibm.MPFR_functions
         #println("Testing CRlibm.$f")
 
         ff = eval(f)  # the actual Julia function
@@ -74,13 +74,13 @@ end
 
 
 println("Testing CRlibm")
-test_CRlibm(CRlibm.function_list)
+test_CRlibm(CRlibm.functions)
 # This will currently fail on the :sinpi etc. functions (that are not defined in MPFR) if MPFR is already enabled because the CRlibm library could not be found
 
 
 println("Testing shadowing MPFR")
 CRlibm.shadow_MPFR()
-test_CRlibm(CRlibm.MPFR_function_list)
+test_CRlibm(CRlibm.MPFR_functions)
 
 println("Testing MPFR")
 test_MPFR()

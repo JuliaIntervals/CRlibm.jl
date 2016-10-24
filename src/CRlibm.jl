@@ -13,7 +13,9 @@ use_MPFR = false
 function __init__()
     # Ensure library is available.
     if (Libdl.dlopen_e(libcrlibm) == C_NULL)
-        warn("CRlibm not properly installed. Try running Pkg.build(\"CRlibm\") to fix it. Falling back to use MPFR. Note that Windows is not yet supported.")
+        warn("CRlibm not properly installed; falling back to use MPFR.
+        This is currently the default on Windows. The package should still
+        work correctly, but will be slower.")
 
         use_MPFR = true
     end
@@ -26,13 +28,13 @@ export tanpi, atanpi
 # (page 8); source: ./deps/src/crlibm1.0beta4/docs/latex/0_getting-started.tex,
 # section "Currently available functions"
 
-function_list = split("""exp expm1 log log1p log2 log10
+const function_names = split("""exp expm1 log log1p log2 log10
                          sin cos tan asin acos atan
                          sinh cosh sinpi cospi tanpi atanpi
                       """)
 
 
-function_list = [symbol(f) for f in function_list]
+const functions = map(Symbol, function_names)
 
 
 ## Generate wrappers of CRlibm shared library:
@@ -41,12 +43,12 @@ function_list = [symbol(f) for f in function_list]
 # cos(x::Float64, ::RoundingMode{:RoundUp}) = ccall((:cos, libcrlibm), Float64, (Float64,), x)
 
 
-MPFR_function_list = split("""exp expm1 log log1p log2 log10
+const MPFR_function_names = split("""exp expm1 log log1p log2 log10
                               sin cos tan asin acos atan
                               sinh cosh
                            """)
 
-MPFR_function_list = [symbol(f) for f in MPFR_function_list]
+const MPFR_functions = map(Symbol, MPFR_function_names)
 
 
 function wrap_MPFR()
@@ -54,7 +56,7 @@ function wrap_MPFR()
 
     ## Generate versions of functions for MPFR until included in Base
 
-    for f in MPFR_function_list
+    for f in MPFR_functions
 
         if f ∉ (:tanpi, :atanpi)  # these are not in Base
             @eval import Base.$f
@@ -70,7 +72,7 @@ function wrap_MPFR()
             mode1 = :(::RoundingMode{$mode1})
 
             mode_string = string("Round", mode)
-            mode2 = symbol(mode_string)
+            mode2 = Symbol(mode_string)
 
             @eval function $(f)(x::BigFloat, $mode1)
                 setrounding(BigFloat, $mode2) do
@@ -85,7 +87,7 @@ end
 
 function wrap_CRlibm()
 
-    for f in function_list
+    for f in functions
 
         if f ∉ (:tanpi, :atanpi)  # these are not in Base
             @eval import Base.$f
@@ -107,7 +109,7 @@ function wrap_CRlibm()
 end
 
 function shadow_MPFR()
-    for f in function_list
+    for f in functions
 
         if f ∉ (:sinpi, :cospi, :tanpi, :atanpi)  # these are not in Base
             @eval import Base.$f
@@ -122,7 +124,7 @@ function shadow_MPFR()
             mode1 = Expr(:quote, mode)
             mode1 = :(::RoundingMode{$mode1})
 
-            mode2 = symbol("Round", string(mode))
+            mode2 = Symbol("Round", string(mode))
 
             @eval function ($f)(x::Float64, $mode1)
                 setprecision(BigFloat, 53) do
@@ -140,7 +142,7 @@ function wrap_generic_fallbacks()
     # avoid ambiguous definition:
     @eval log(::Irrational{:e}, r::RoundingMode) = 1   # this definition is consistent with Base
 
-    for f in function_list
+    for f in functions
         @eval ($f)(x::Real, r::RoundingMode) = ($f)(float(x), r)
     end
 end

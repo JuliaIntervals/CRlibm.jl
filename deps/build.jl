@@ -23,7 +23,7 @@ cd(lib_name)
 println("Working in ", pwd())
 
 suffix = is_apple() ? "dylib" : "so"
-run(`./configure --silent CFLAGS="-fpic -w"`)
+run(`./configure --silent CFLAGS='-fpic -w'`)
 println("Working in ", pwd())
 
 run(`make -s V=0`)

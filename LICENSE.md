@@ -26,8 +26,9 @@ The `CRlibm.jl` Julia package is licensed under the MIT "Expat" License:
 
 # `CRlibm` library
 
-`CRlibm.jl` wraps the `CRlibm` package, which is licensed under LGPL.
-The license text is as follows:
+`CRlibm.jl` wraps the `CRlibm` package, whose source code is included in the
+`deps/src/` subdirectory. This library is licensed under the GNU LGPL license:
+
 
 > Author  : David Defour, Catherine Daramy, Florent de Dinechin, Christoph Lauter
  Contact : David.Defour@ens-lyon.fr, catherine_daramy@ens-lyon.fr

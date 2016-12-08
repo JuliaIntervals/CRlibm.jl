@@ -17,7 +17,7 @@ function __init__()
         This is currently the default on Windows. The package should still
         work correctly, but will be slower.")
 
-        use_MPFR = true
+        global use_MPFR = true
     end
 
 end

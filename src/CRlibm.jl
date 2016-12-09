@@ -9,7 +9,7 @@ function setup_CRlibm(use_MPFR=false)
     wrap_MPFR()
 
     if use_MPFR
-        println("CRlibm will shadow MPFR...")
+        println("CRlibm will shadow MPFR.")
         shadow_MPFR()
     else
         wrap_CRlibm()
@@ -157,9 +157,9 @@ use_MPFR = false
 
 # Ensure library is available:
 if (Libdl.dlopen_e(libcrlibm) == C_NULL)
-    warn("CRlibm not properly installed; falling back to use MPFR.
-    This is currently the default on Windows. The package should still
-    work correctly, but will be slower.")
+    warn("CRlibm is falling back to use MPFR; it will have
+    the same functionality, but with slower execution.
+    This is currently the only option on Windows.")
 
 	use_MPFR = true
 end

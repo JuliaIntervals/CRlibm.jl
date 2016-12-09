@@ -1,54 +1,22 @@
-
+__precompile__(true)
 module CRlibm
 
 using Compat
 
-unixpath = "../deps/src/crlibm-1.0beta4/libcrlibm"
-const libcrlibm = joinpath(dirname(@__FILE__), unixpath)
 
-# check from Diercxk.jl (3-clause BSD license):
+function setup_CRlibm(use_MPFR=false)
 
-use_MPFR = false
+    wrap_MPFR()
 
-function __init__()
-    # Ensure library is available.
-    if (Libdl.dlopen_e(libcrlibm) == C_NULL)
-        warn("CRlibm not properly installed; falling back to use MPFR.
-        This is currently the default on Windows. The package should still
-        work correctly, but will be slower.")
-
-        global use_MPFR = true
+    if use_MPFR
+        println("CRlibm will shadow MPFR...")
+        shadow_MPFR()
+    else
+        wrap_CRlibm()
     end
 
+    wrap_generic_fallbacks()
 end
-
-export tanpi, atanpi
-
-# All functions in crlibm except pow, according to section 0.4 of the PDF manual
-# (page 8); source: ./deps/src/crlibm1.0beta4/docs/latex/0_getting-started.tex,
-# section "Currently available functions"
-
-const function_names = split("""exp expm1 log log1p log2 log10
-                         sin cos tan asin acos atan
-                         sinh cosh sinpi cospi tanpi atanpi
-                      """)
-
-
-const functions = map(Symbol, function_names)
-
-
-## Generate wrappers of CRlibm shared library:
-
-# Aiming for functions of the form
-# cos(x::Float64, ::RoundingMode{:RoundUp}) = ccall((:cos, libcrlibm), Float64, (Float64,), x)
-
-
-const MPFR_function_names = split("""exp expm1 log log1p log2 log10
-                              sin cos tan asin acos atan
-                              sinh cosh
-                           """)
-
-const MPFR_functions = map(Symbol, MPFR_function_names)
 
 
 function wrap_MPFR()
@@ -85,6 +53,7 @@ function wrap_MPFR()
 
 end
 
+
 function wrap_CRlibm()
 
     for f in functions
@@ -107,6 +76,7 @@ function wrap_CRlibm()
     end
 
 end
+
 
 function shadow_MPFR()
     for f in functions
@@ -148,17 +118,53 @@ function wrap_generic_fallbacks()
 end
 
 
-wrap_MPFR()
 
-if !use_MPFR
-    wrap_CRlibm()
-else
-    shadow_MPFR()
+export tanpi, atanpi
+
+# All functions in crlibm except pow, according to section 0.4 of the PDF manual
+# (page 8); source: ./deps/src/crlibm1.0beta4/docs/latex/0_getting-started.tex,
+# section "Currently available functions"
+
+const function_names = split("""exp expm1 log log1p log2 log10
+                         sin cos tan asin acos atan
+                         sinh cosh sinpi cospi tanpi atanpi
+                      """)
+
+
+const functions = map(Symbol, function_names)
+
+
+## Generate wrappers of CRlibm shared library:
+
+# Aiming for functions of the form
+# cos(x::Float64, ::RoundingMode{:RoundUp}) = ccall((:cos, libcrlibm), Float64, (Float64,), x)
+
+
+const MPFR_function_names = split("""exp expm1 log log1p log2 log10
+                              sin cos tan asin acos atan
+                              sinh cosh
+                           """)
+
+const MPFR_functions = map(Symbol, MPFR_function_names)
+
+
+
+unixpath = "../deps/src/crlibm-1.0beta4/libcrlibm"
+const libcrlibm = joinpath(dirname(@__FILE__), unixpath)
+
+
+use_MPFR = false
+
+# Ensure library is available:
+if (Libdl.dlopen_e(libcrlibm) == C_NULL)
+    warn("CRlibm not properly installed; falling back to use MPFR.
+    This is currently the default on Windows. The package should still
+    work correctly, but will be slower.")
+
+	use_MPFR = true
 end
 
-wrap_generic_fallbacks()
-
-
+setup_CRlibm(use_MPFR)
 
 
 end # module

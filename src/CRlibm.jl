@@ -4,7 +4,16 @@ module CRlibm
 using Compat
 
 
-function setup_CRlibm(use_MPFR=false)
+function setup(use_MPFR=false)
+
+    # Ensure library is available:
+    if (Libdl.dlopen_e(libcrlibm) == C_NULL)
+        warn("CRlibm is falling back to use MPFR; it will have
+        the same functionality, but with slower execution.
+        This is currently the only option on Windows.")
+
+    	use_MPFR = true
+    end
 
     wrap_MPFR()
 
@@ -151,20 +160,6 @@ const MPFR_functions = map(Symbol, MPFR_function_names)
 
 unixpath = "../deps/src/crlibm-1.0beta4/libcrlibm"
 const libcrlibm = joinpath(dirname(@__FILE__), unixpath)
-
-
-use_MPFR = false
-
-# Ensure library is available:
-if (Libdl.dlopen_e(libcrlibm) == C_NULL)
-    warn("CRlibm is falling back to use MPFR; it will have
-    the same functionality, but with slower execution.
-    This is currently the only option on Windows.")
-
-	use_MPFR = true
-end
-
-setup_CRlibm(use_MPFR)
 
 
 end # module

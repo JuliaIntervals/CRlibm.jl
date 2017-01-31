@@ -1,3 +1,8 @@
+# v0.3
+
+- API change: Doing `using CRlibm` **no longer defines the rounded functions**.
+You must explicitly call `CRlibm.setup()`
+
 # v0.2.4
 
 - Remove 0.5 deprecation warnings; some code clean-up
@@ -9,5 +14,3 @@
 # v0.2
 
 - Added MPFR wrappers
-
-

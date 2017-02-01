@@ -161,6 +161,8 @@ const MPFR_functions = map(Symbol, MPFR_function_names)
 unixpath = "../deps/src/crlibm-1.0beta4/libcrlibm"
 const libcrlibm = joinpath(dirname(@__FILE__), unixpath)
 
+info("Call `CRlibm.setup() to define correctly-rounded functions`")
+
 
 end # module
 

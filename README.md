@@ -2,7 +2,7 @@
 
 [![Build Status](https://travis-ci.org/dpsanders/CRlibm.jl.svg?branch=master)](https://travis-ci.org/dpsanders/CRlibm.jl)
 
-A Julia wrapper around the [`CRlibm` library](http://lipforge.ens-lyon.fr/www/crlibm/). This library provides *C*orrectly-*R*ounded mathematical functions, as described on the
+A Julia wrapper around the [`CRlibm` library](http://lipforge.ens-lyon.fr/www/crlibm/). This library provides **C**orrectly-**R**ounded mathematical functions, as described on the
 library home page:
 
 
@@ -17,14 +17,22 @@ library home page:
 
 > `CRlibm` is distributed under the GNU Lesser General Public License (LGPL).
 
+
 ## Usage
 
-Note that *the floating-point rounding mode should be set to `RoundNearest`*; normally nothing needs to be done,
-since this is the default value:
-
 ```julia
-julia> julia> set_rounding(Float64, RoundNearest)
-0
+using CRlibm
+CRlibm.setup()  # required since v0.3 of CRlibm
+```
+
+Since v0.3 of CRlibm, it is necessary to call `CRlibm.setup()` explicitly.
+
+The floating-point rounding mode must be set to `RoundNearest` for
+the library to work correctly;
+normally nothing needs to be done, since this is the default value:
+```julia
+julia> rounding(Float64)
+RoundingMode{:Nearest}()
 ```
 
 The library provides correctly-rounded versions of elementary functions such as

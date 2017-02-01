@@ -1,7 +1,11 @@
-# v0.3
+# v0.4
 
 - API change: Doing `using CRlibm` **no longer defines the rounded functions**.
 You must explicitly call `CRlibm.setup()`
+
+# v0.3.1
+
+- Now works on Windows by wrapping MPFR 
 
 # v0.2.4
 

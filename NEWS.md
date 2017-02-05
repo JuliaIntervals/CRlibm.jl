@@ -5,13 +5,17 @@ You must explicitly call `CRlibm.setup()`
 
 # v0.3.1
 
-- Now works on Windows by wrapping MPFR 
+- Now works correctly on Windows by wrapping MPFR 
 
-# v0.2.4
+# v0.3
+f
+- Source code now included in the Julia package
+
+## v0.2.4
 
 - Remove 0.5 deprecation warnings; some code clean-up
 
-# v0.2.3
+## v0.2.3
 
 - Removed failure when running on Windows; defaults to shadowing MPFR functions
 

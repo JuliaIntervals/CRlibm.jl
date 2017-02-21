@@ -3,8 +3,21 @@ module CRlibm
 
 using Compat
 
+doc"""
+    setup(; do_export=true, use_MPFR=false)
 
-function setup(use_MPFR=false)
+Define correctly-rounded standard mathematical functions.
+(See `CRlibm.functions` for a list.)
+
+Options:
+- `do_export`: if `true`, exports the functions to `Base`; otherwise they
+are accessible as `CRlibm.sin` etc.
+
+- `use_MPFR`: if `true`, CRlibm just wraps corresponding MPFR (`BigFlot`)
+
+"""
+
+function setup(; do_export=true, use_MPFR=false)
 
     # Ensure library is available:
     if (Libdl.dlopen_e(libcrlibm) == C_NULL)
@@ -15,29 +28,31 @@ function setup(use_MPFR=false)
     	use_MPFR = true
     end
 
-    wrap_MPFR()
+    wrap_MPFR(do_export)
 
     if use_MPFR
-        println("CRlibm will shadow MPFR.")
-        shadow_MPFR()
+        println("CRlibm is shadowing MPFR.")
+        shadow_MPFR(do_export)
     else
-        wrap_CRlibm()
+        wrap_CRlibm(do_export)
     end
 
     wrap_generic_fallbacks()
 end
 
-
-function wrap_MPFR()
+doc"""
+Define convenience functions like `sin(x, RoundDown)` for `x::BigFloat`
+"""
+function wrap_MPFR(do_export=true)
     # stopgap until included in Base
 
     ## Generate versions of functions for MPFR until included in Base
 
     for f in MPFR_functions
 
-        if f ∉ (:tanpi, :atanpi)  # these are not in Base
-            @eval import Base.$f
-        end
+        # if f ∉ (:tanpi, :atanpi)  # these are not in Base
+        #     @eval import Base.$f
+        # end
 
         for (mode, symb) in [(:Nearest, "n"), (:Up, "u"), (:Down, "d"),
                              (:ToZero, "z")
@@ -51,6 +66,14 @@ function wrap_MPFR()
             mode_string = string("Round", mode)
             mode2 = Symbol(mode_string)
 
+            if do_export && f ∉ (:tanpi, :atanpi)
+                @eval function Base.$(f)(x::BigFloat, $mode1)
+                    setrounding(BigFloat, $mode2) do
+                        $(f)(x)
+                    end
+                end
+            end
+
             @eval function $(f)(x::BigFloat, $mode1)
                 setrounding(BigFloat, $mode2) do
                     $(f)(x)
@@ -63,13 +86,14 @@ function wrap_MPFR()
 end
 
 
-function wrap_CRlibm()
+function wrap_CRlibm(do_export=true)
 
     for f in functions
+        @show f
 
-        if f ∉ (:tanpi, :atanpi)  # these are not in Base
-            @eval import Base.$f
-        end
+        # if f ∉ (:tanpi, :atanpi)  # these are not in Base
+        #     @eval import Base.$f
+        # end
 
         for (mode, symb) in [(:Nearest, "n"), (:Up, "u"), (:Down, "d"),
                              (:ToZero, "z")
@@ -80,19 +104,25 @@ function wrap_CRlibm()
             mode = Expr(:quote, mode)
             mode = :(::RoundingMode{$mode})
 
-            @eval ($f)(x::Float64, $mode) = ccall(($fname, libcrlibm), Float64, (Float64,), x)
+            if do_export && f ∉ (:tanpi, :atanpi)  # not in Base`
+                @eval Base.$f(x::Float64, $mode) = ccall(($fname, libcrlibm), Float64, (Float64,), x)
+            end
+
+            @eval $f(x::Float64, $mode) = ccall(($fname, libcrlibm), Float64, (Float64,), x)
+
+
         end
     end
 
 end
 
 
-function shadow_MPFR()
+function shadow_MPFR(do_export=true)
     for f in functions
 
-        if f ∉ (:sinpi, :cospi, :tanpi, :atanpi)  # these are not in Base
-            @eval import Base.$f
-        end
+        # if f ∉ (:sinpi, :cospi, :tanpi, :atanpi)  # these are not in Base
+        #     @eval import Base.$f
+        # end
 
         for (mode, symb) in [(:Nearest, "n"), (:Up, "u"), (:Down, "d"),
                              (:ToZero, "z")
@@ -105,7 +135,15 @@ function shadow_MPFR()
 
             mode2 = Symbol("Round", string(mode))
 
-            @eval function ($f)(x::Float64, $mode1)
+            if do_export && f ∉ (:sinpi, :cospi, :tanpi, :atanpi)
+                @eval function Base.$f(x::Float64, $mode1)
+                    setprecision(BigFloat, 53) do
+                        Float64(($f)(BigFloat(x), $mode2))
+                    end
+                end
+            end
+
+            @eval function $f(x::Float64, $mode1)
                 setprecision(BigFloat, 53) do
                     Float64(($f)(BigFloat(x), $mode2))
                 end
@@ -122,7 +160,7 @@ function wrap_generic_fallbacks()
     @eval log(::Irrational{:e}, r::RoundingMode) = 1   # this definition is consistent with Base
 
     for f in functions
-        @eval ($f)(x::Real, r::RoundingMode) = ($f)(float(x), r)
+        @eval $f(x::Real, r::RoundingMode) = ($f)(float(x), r)
     end
 end
 

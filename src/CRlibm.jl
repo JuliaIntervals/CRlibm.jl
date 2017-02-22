@@ -80,11 +80,6 @@ end
 function wrap_CRlibm()
 
     for f in functions
-        @show f
-
-        # if f ∉ (:tanpi, :atanpi)  # these are not in Base
-        #     @eval import Base.$f
-        # end
 
         for (mode, symb) in [(:Nearest, "n"), (:Up, "u"), (:Down, "d"),
                              (:ToZero, "z")

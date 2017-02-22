@@ -65,7 +65,7 @@ function wrap_MPFR()
 
             @eval function $(f)(x::BigFloat, $mode1)
                 setrounding(BigFloat, $mode2) do
-                    $(f)(x)
+                    Base.$f(x)
                 end
             end
         end

@@ -3,13 +3,12 @@ using Compat
 
 using Base.Test
 
-CRlibm.setup()
-
-@test cos(0.5, RoundDown) == 0.8775825618903726
-@test cos(0.5, RoundUp) == 0.8775825618903728
-@test cos(0.5, RoundNearest) == cos(0.5) == 0.8775825618903728
-@test cos(1.6, RoundToZero) == -0.029199522301288812
-@test cos(1.6, RoundDown) == -0.029199522301288815
+@test CRlibm.cos(0.5, RoundDown) == 0.8775825618903726
+@test CRlibm.cos(0.5, RoundUp) == 0.8775825618903728
+@test CRlibm.cos(0.5, RoundNearest) == cos(0.5) == 0.8775825618903728
+@test CRlibm.cos(1.6, RoundToZero) == -0.029199522301288812
+@test CRlibm.cos(1.6, RoundDown) == -0.029199522301288815
+@test CRlibm.cos(0.5) == CRlibm.cos(0.5, RoundNearest)
 
 function my_eps(prec::Int)
     ldexp(eps(Float64), 53-prec)
@@ -33,7 +32,7 @@ function test_CRlibm(functions)
     for f in functions
         #println("Testing CRlibm.$f")
 
-        ff = eval(f)  # the actual Julia function
+        ff = getfield(CRlibm, f)  # the actual Julia function
 
         for val in (0.51, 103.2, -17.1, -0.00005, 1)
 
@@ -51,7 +50,7 @@ function test_MPFR()
     for f in CRlibm.MPFR_functions
         #println("Testing CRlibm.$f")
 
-        ff = eval(f)  # the actual Julia function
+        ff = getfield(CRlibm, f)  # the actual Julia function
 
         for val in (0.51, 103.2, -17.1, -0.00005)
             #print(val, " ")

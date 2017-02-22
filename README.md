@@ -2,8 +2,8 @@
 
 [![Build Status](https://travis-ci.org/dpsanders/CRlibm.jl.svg?branch=master)](https://travis-ci.org/dpsanders/CRlibm.jl)
 
-A Julia wrapper around the [`CRlibm` library](http://lipforge.ens-lyon.fr/www/crlibm/). This library provides **C**orrectly-**R**ounded mathematical functions, as described on the
-library home page:
+A Julia wrapper around the [`CRlibm` library](http://lipforge.ens-lyon.fr/www/crlibm/). This library provides Correctly-Rounded mathematical functions, as described on the
+library's home page:
 
 
 > ### `CRlibm`, an efficient and proven correctly-rounded mathematical library
@@ -17,15 +17,13 @@ library home page:
 
 > `CRlibm` is distributed under the GNU Lesser General Public License (LGPL).
 
+This Julia wrapper is distributed under the MIT license.
 
 ## Usage
 
 ```julia
 using CRlibm
-CRlibm.setup()  # required since v0.3 of CRlibm
 ```
-
-Since v0.3 of CRlibm, it is necessary to call `CRlibm.setup()` explicitly.
 
 The floating-point rounding mode must be set to `RoundNearest` for
 the library to work correctly;
@@ -40,25 +38,28 @@ The library provides correctly-rounded versions of elementary functions such as
 
 
 ```julia
-julia> cos(0.5, RoundUp)
+julia> CRlibm.cos(0.5, RoundUp)
 0.8775825618903728
 
-julia> cos(0.5, RoundDown)
+julia> CRlibm.cos(0.5, RoundDown)
 0.8775825618903726
 
-julia> cos(0.5, RoundNearest)
+julia> CRlibm.cos(0.5, RoundNearest)
 0.8775825618903728
 
 julia> cos(0.5)  # built-in
 0.8775825618903728
 
-julia> cos(1.6, RoundToZero)
+julia> CRlibm.cos(1.6, RoundToZero)
 -0.029199522301288812
 
-julia> cos(1.6, RoundDown)
+julia> CRlibm.cos(1.6, RoundDown)
 -0.029199522301288815
 
+julia> CRlibm.cos(0.5)  # equivalent to `CRlibm.cos(0.5, RoundNearest)`
+0.8775825618903728
 ```
+Note that the functions are not exported, so the `CRlibm.` is necessary.
 
 ## List of implemented functions
 
@@ -71,8 +72,7 @@ All functions from `CRlibm` are wrapped, except the power function:
 - `sinpi`, `cospi`
 - `tanpi`, `atanpi`
 
-All of these extend functions from `Base` Julia, except `tanpi` and `atanpi`,
-which are not present in `Base` and are exported by `CRlibm.jl`.
+Since v0.5 of `CRlibm`, **no functions are exported**.
 
 The available rounding modes are `RoundNearest`, `RoundUp`, `RoundDown` and
 `RoundToZero`.
@@ -118,19 +118,19 @@ ACM Transactions on Mathematical Software **37**(1), 2010
 As far as we are aware, the only alternative package to `CRlibm` is [`MPFR`](http://www.mpfr.org/). This provides correctly-rounded functions for
 floating-point numbers of **arbitrary precision**, *including* the power function. However, it can be slow.
 
-MPFR is wrapped in base Julia in the `BigFloat` type. It can emulate double-precision floating point by setting the precision to 53 bits, and using `with_bigfloat_rounding`:
+MPFR is wrapped in base Julia in the `BigFloat` type. It can emulate double-precision floating point by setting the precision to 53 bits, and using `setrounding`:
 
 ```julia
-julia> set_bigfloat_precision(53)
+julia> setprecision(53)
 53
 
-julia> b = with_rounding(BigFloat, RoundDown) do
+julia> b = setrounding(BigFloat, RoundDown) do
            a = parse(BigFloat, "2.1")
            a^3
        end
 9.2609999999999939
 
-julia> c = with_rounding(BigFloat, RoundUp) do
+julia> c = setrounding(BigFloat, RoundUp) do
            a = parse(BigFloat, "2.1")
            a^3
        end
@@ -138,21 +138,20 @@ julia> c = with_rounding(BigFloat, RoundUp) do
 
 ```
 
-## Wrapping MPFR
+## Wrapping MPFR (`BigFloat`)
 
-Version 0.2 of `CRlibm` wraps the MPFR functions with the same extended syntax with rounding modes, so that we can do
+MPFR (`BigFloat`) functions are extended with the same syntax with explicit rounding modes:
 ```julia
-julia> set_bigfloat_precision(64)
+julia> setprecision(64)
 64
 
-julia> exp(BigFloat(0.51), RoundDown)
+julia> CRlibm.exp(BigFloat(0.51), RoundDown)
 1.66529119494588632316
 
-julia> exp(BigFloat(0.51), RoundUp)
+julia> CRlibm.exp(BigFloat(0.51), RoundUp)
 1.66529119494588632327
 ```
 
-(This is a stopgap measure until this syntax is (hopefully) introduced into `MPFR.jl` in `Base` in the future.)
 
 The function `CRlibm.shadow_MPFR()` can be called to redefine the functions that take floating-point arguments to also use the MPFR versions; this is automatic if the `CRlibm` library is not available.
 

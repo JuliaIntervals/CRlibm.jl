@@ -1,3 +1,13 @@
+# v0.5
+
+- API change: Functions are **automatically defined again, but no longer exported**.
+Use e.g. `CRlibm.sin(0.5, RoundDown)`.
+
+- It is now possible to use `CRlibm.sin(0.5)` instead of `CRlibm.sin(0.5, RoundNearest)`.
+
+- It is no longer necessary to call `CRlibm.setup()`.
+
+
 # v0.4
 
 - API change: Doing `using CRlibm` **no longer defines the rounded functions**.
@@ -5,7 +15,7 @@ You must explicitly call `CRlibm.setup()`
 
 # v0.3.1
 
-- Now works correctly on Windows by wrapping MPFR 
+- Now works correctly on Windows by wrapping MPFR
 
 # v0.3
 f

@@ -117,7 +117,7 @@ function shadow_MPFR()
 
             @eval function $f(x::Float64, $mode1)
                 setprecision(BigFloat, 53) do
-                    Float64(($f)(BigFloat(x), $mode2))
+                    Float64(($f)(BigFloat(x), $mode2), $mode2)
                 end
             end
             # use the functions that were previously defined for BigFloat

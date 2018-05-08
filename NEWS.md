@@ -1,3 +1,11 @@
+
+# v0.6
+
+- Drop support for Julia < 0.6
+
+- Bugfix for rounding of wrapped MPFR functions
+
+
 # v0.5
 
 - API change: Functions are **automatically defined again, but no longer exported**.

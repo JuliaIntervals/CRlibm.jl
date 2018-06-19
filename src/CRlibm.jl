@@ -1,9 +1,14 @@
 __precompile__(true)
 module CRlibm
 
+if VERSION <= v"0.7.0-DEV.2004"
+    #
+else
+    using Libdl
+end
 using Compat
 
-doc"""
+"""
     setup(use_MPFR=false)
 
 Define correctly-rounded standard mathematical functions.
@@ -17,7 +22,6 @@ Options:
 - `use_MPFR`: if `true`, the `Float64` functions just wrap corresponding MPFR functionality (`BigFloat`).
 
 """
-
 function setup(use_MPFR=false)
 
     # Ensure library is available:
@@ -41,7 +45,7 @@ function setup(use_MPFR=false)
     wrap_generic_fallbacks()
 end
 
-doc"""
+"""
 Define convenience functions like `sin(x, RoundDown)` for `x::BigFloat`
 """
 function wrap_MPFR()

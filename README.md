@@ -1,6 +1,6 @@
 # CRlibm.jl
 
-[![Build Status](https://travis-ci.org/dpsanders/CRlibm.jl.svg?branch=master)](https://travis-ci.org/dpsanders/CRlibm.jl)
+[![Build Status](https://travis-ci.org/JuliaIntervals/CRlibm.jl.svg?branch=master)](https://travis-ci.org/dpsanders/CRlibm.jl)
 
 A Julia wrapper around the [`CRlibm` library](http://lipforge.ens-lyon.fr/www/crlibm/). This library provides Correctly-Rounded mathematical functions, as described on the
 library's home page:

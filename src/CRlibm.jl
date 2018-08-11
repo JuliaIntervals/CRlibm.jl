@@ -1,12 +1,7 @@
 __precompile__(true)
 module CRlibm
 
-if VERSION <= v"0.7.0-DEV.2004"
-    #
-else
-    using Libdl
-end
-using Compat
+using Libdl
 
 """
     setup(use_MPFR=false)

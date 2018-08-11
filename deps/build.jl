@@ -3,9 +3,9 @@
 
 # do it by hand since problem with BinDeps
 
-using Compat
+# using Compat
 
-if is_windows()
+if Sys.iswindows()
     warn("On Windows, CRlibm currently just wraps MPFR, and so is slow.")
     exit(0)
 end

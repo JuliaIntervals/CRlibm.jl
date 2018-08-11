@@ -22,7 +22,7 @@ run(`tar xzf $(lib_name).tar.gz`)
 cd(lib_name)
 println("Working in ", pwd())
 
-suffix = is_apple() ? "dylib" : "so"
+suffix = Sys.isapple() ? "dylib" : "so"
 run(`./configure --silent CFLAGS='-fpic -w'`)
 println("Working in ", pwd())
 

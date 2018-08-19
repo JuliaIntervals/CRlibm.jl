@@ -1,10 +1,5 @@
 using CRlibm
-
-if VERSION < v"0.7.0-DEV.2004"
-    using Base.Test
-else
-    using Test
-end
+using Test
 
 @test CRlibm.cos(0.5, RoundDown) == 0.8775825618903726
 @test CRlibm.cos(0.5, RoundUp) == 0.8775825618903728

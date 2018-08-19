@@ -21,7 +21,7 @@ function setup(use_MPFR=false)
 
     # Ensure library is available:
     if (Libdl.dlopen_e(libcrlibm) == C_NULL)
-        warn("CRlibm is falling back to use MPFR; it will have
+        @warn("CRlibm is falling back to use MPFR; it will have
         the same functionality, but with slower execution.
         This is currently the only option on Windows.")
 

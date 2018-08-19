@@ -1,15 +1,12 @@
-# Modified from Diercxk.jl:
+# build.jl modified from the Diercxk.jl package:
 # https://github.com/kbarbary/Dierckx.jl/blob/master/deps/build.jl  (3-clause BSD license)
 
 # do it by hand since problem with BinDeps
-
-# using Compat
 
 if Sys.iswindows()
     warn("On Windows, CRlibm currently just wraps MPFR, and so is slow.")
     exit(0)
 end
-#end
 
 lib_name = "crlibm-1.0beta4"
 src_dir = "src"

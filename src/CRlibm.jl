@@ -38,6 +38,8 @@ function setup(use_MPFR=false)
     end
 
     wrap_generic_fallbacks()
+
+    return use_MPFR
 end
 
 """
@@ -172,6 +174,6 @@ const MPFR_functions = map(Symbol, MPFR_function_names)
 unixpath = "../deps/src/crlibm-1.0beta4/libcrlibm"
 const libcrlibm = joinpath(dirname(@__FILE__), unixpath)
 
-setup()
+use_MPFR = setup()
 
 end # module

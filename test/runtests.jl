@@ -71,15 +71,16 @@ function test_MPFR()
 end
 
 
+if !(CRlibm.use_MPFR)
+    println("Testing CRlibm")
+    test_CRlibm(CRlibm.functions)
+    # This will currently fail on the :sinpi etc. functions (that are not defined in MPFR) if MPFR is already enabled because the CRlibm library could not be found
 
-println("Testing CRlibm")
-test_CRlibm(CRlibm.functions)
-# This will currently fail on the :sinpi etc. functions (that are not defined in MPFR) if MPFR is already enabled because the CRlibm library could not be found
 
-
-println("Testing shadowing MPFR")
-CRlibm.shadow_MPFR()
-test_CRlibm(CRlibm.MPFR_functions)
+    println("Testing shadowing MPFR")
+    CRlibm.shadow_MPFR()
+    test_CRlibm(CRlibm.MPFR_functions)
+end
 
 println("Testing MPFR")
 test_MPFR()

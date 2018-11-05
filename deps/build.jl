@@ -4,7 +4,7 @@
 # do it by hand since problem with BinDeps
 
 if Sys.iswindows()
-    warn("On Windows, CRlibm currently just wraps MPFR, and so is slow.")
+    @warn "On Windows, CRlibm currently just wraps MPFR, and so is slow."
     exit(0)
 end
 

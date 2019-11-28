@@ -133,7 +133,7 @@ function wrap_generic_fallbacks()
 
         # Specialise for Float32 and Float16 to get the other IEEE FP types
         # working transparently as well
-        @eval $f(x::Float16, r::RoundingMode) = Float16((Base.$f)(Float32(x)), r)
+        @eval $f(x::Float16, r::RoundingMode) = Float16((Base.$f)(Float64(x)), r)
         @eval $f(x::Float32, r::RoundingMode) = Float32((Base.$f)(Float64(x)), r)
     end
 end

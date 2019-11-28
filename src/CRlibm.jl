@@ -25,13 +25,13 @@ function setup(use_MPFR=false)
         the same functionality, but with slower execution.
         This is currently the only option on Windows.")
 
-    	use_MPFR = true
+        use_MPFR = true
     end
 
     wrap_MPFR()
 
     if use_MPFR
-        println("CRlibm is shadowing MPFR.")
+        @info "CRlibm is shadowing MPFR."
         shadow_MPFR()
     else
         wrap_CRlibm()
@@ -95,10 +95,11 @@ function wrap_CRlibm()
 
         end
 
-        @eval $f(x::Float64) = $f(x, RoundNearest)
-
+        # CRlibm only implements Float64 ... this is to get the other IEEE FP types
+        # working transparently as well (albeit not as efficient as possible)
+        @eval $f(x::Float16, r::RoundingMode) = Float16((Base.$f)(Float32(x)), r)
+        @eval $f(x::Float32, r::RoundingMode) = Float32((Base.$f)(Float64(x)), r)
     end
-
 end
 
 
@@ -116,15 +117,15 @@ function shadow_MPFR()
 
             mode2 = Symbol("Round", string(mode))
 
-            @eval function $f(x::Float64, $mode1)
-                setprecision(BigFloat, 53) do
-                    Float64(($f)(BigFloat(x), $mode2), $mode2)
+            for T in (Float16, Float32, Float64)
+                @eval function $f(x::$T, $mode1)
+                    setprecision(BigFloat, precision($T)) do
+                        $T(($f)(BigFloat(x), $mode2), $mode2)
+                    end
                 end
             end
             # use the functions that were previously defined for BigFloat
         end
-
-        @eval $f(x::BigFloat) = $f(x, RoundNearest)
 
     end
 end

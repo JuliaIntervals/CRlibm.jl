@@ -1,12 +1,29 @@
 using CRlibm
 using Test
 
+# Float64
 @test CRlibm.cos(0.5, RoundDown) == 0.8775825618903726
 @test CRlibm.cos(0.5, RoundUp) == 0.8775825618903728
 @test CRlibm.cos(0.5, RoundNearest) == cos(0.5) == 0.8775825618903728
 @test CRlibm.cos(1.6, RoundToZero) == -0.029199522301288812
 @test CRlibm.cos(1.6, RoundDown) == -0.029199522301288815
 @test CRlibm.cos(0.5) == CRlibm.cos(0.5, RoundNearest)
+
+# Float32
+@test CRlibm.cos(0.5f0, RoundDown) == 0.87758255f0
+@test CRlibm.cos(0.5f0, RoundUp) == 0.8775826f0
+@test CRlibm.cos(0.5f0, RoundNearest) == cos(0.5f0) == 0.87758255f0
+@test CRlibm.cos(1.6f0, RoundToZero) == -0.029199544f0
+@test CRlibm.cos(1.6f0, RoundDown) == -0.029199546f0
+@test CRlibm.cos(0.5f0) == CRlibm.cos(0.5f0, RoundNearest)
+
+# Float16
+@test CRlibm.cos(Float16(0.5), RoundDown) == Float16(0.8774)
+@test CRlibm.cos(Float16(0.5), RoundUp) == Float16(0.878)
+@test CRlibm.cos(Float16(0.5), RoundNearest) == cos(Float16(0.5)) == Float16(0.8774)
+@test CRlibm.cos(Float16(1.6), RoundToZero) == Float16(-0.02881)
+@test CRlibm.cos(Float16(1.6), RoundDown) == Float16(-0.02882)
+@test CRlibm.cos(Float16(0.5)) == CRlibm.cos(Float16(0.5), RoundNearest)
 
 function my_eps(prec::Int)
     ldexp(eps(Float64), 53-prec)

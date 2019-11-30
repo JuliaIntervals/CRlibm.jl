@@ -92,8 +92,12 @@ function wrap_CRlibm()
             mode = :(::RoundingMode{$mode})
 
             @eval $f(x::Float64, $mode) = ccall(($fname, libcrlibm), Float64, (Float64,), x)
-
         end
+
+        # Specialise for Float32 and Float16 to get the other IEEE FP types
+        # working transparently as well
+        @eval $f(x::Float16, r::RoundingMode) = Float16(($f)(Float64(x), r), r)
+        @eval $f(x::Float32, r::RoundingMode) = Float32(($f)(Float64(x), r), r)
     end
 end
 
@@ -112,9 +116,11 @@ function shadow_MPFR()
 
             mode2 = Symbol("Round", string(mode))
 
-            @eval function $f(x::Float64, $mode1)
-                setprecision(BigFloat, 53) do
-                    Float64(($f)(BigFloat(x), $mode2), $mode2)
+            for T in (Float16, Float32, Float64)
+                @eval function $f(x::$T, $mode1)
+                    setprecision(BigFloat, precision($T)) do
+                        $T(($f)(BigFloat(x), $mode2), $mode2)
+                    end
                 end
             end
             # use the functions that were previously defined for BigFloat
@@ -130,11 +136,6 @@ function wrap_generic_fallbacks()
     for f in functions
         @eval $f(x::Real, r::RoundingMode) = ($f)(float(x), r)
         @eval $f(x::Real) = $f(x, RoundNearest)
-
-        # Specialise for Float32 and Float16 to get the other IEEE FP types
-        # working transparently as well
-        @eval $f(x::Float16, r::RoundingMode) = Float16((Base.$f)(Float64(x)), r)
-        @eval $f(x::Float32, r::RoundingMode) = Float32((Base.$f)(Float64(x)), r)
     end
 end
 

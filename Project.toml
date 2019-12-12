@@ -2,6 +2,9 @@ name = "CRlibm"
 uuid = "96374032-68de-5a5b-8d9e-752f78720389"
 version = "0.8.0"
 
+[deps]
+Libdl = "8f399da3-3557-5675-b5ff-fb832c97cbdb"
+
 [compat]
 julia = "1"
 

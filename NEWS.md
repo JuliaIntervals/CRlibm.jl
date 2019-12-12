@@ -1,4 +1,9 @@
 
+# v0.8
+
+- Support only Julia >= 1.0
+- Add support for functions with Float32 and Float16 by converting to Float64. 
+
 # v0.6
 
 - Drop support for Julia < 0.6

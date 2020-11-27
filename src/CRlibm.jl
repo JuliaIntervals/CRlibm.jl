@@ -1,7 +1,6 @@
-__precompile__(true)
 module CRlibm
 
-using Libdl
+using CRlibm_jll
 
 """
     setup(use_MPFR=false)
@@ -18,16 +17,6 @@ Options:
 
 """
 function setup(use_MPFR=false)
-
-    # Ensure library is available:
-    if (Libdl.dlopen_e(libcrlibm) == C_NULL)
-        @warn("CRlibm is falling back to use MPFR; it will have
-        the same functionality, but with slower execution.
-        This is currently the only option on Windows.")
-
-        use_MPFR = true
-    end
-
     wrap_MPFR()
 
     if use_MPFR
@@ -166,11 +155,6 @@ const MPFR_function_names = split("""exp expm1 log log1p log2 log10
                            """)
 
 const MPFR_functions = map(Symbol, MPFR_function_names)
-
-
-
-unixpath = "../deps/src/crlibm-1.0beta4/libcrlibm"
-const libcrlibm = joinpath(dirname(@__FILE__), unixpath)
 
 use_MPFR = setup()
 

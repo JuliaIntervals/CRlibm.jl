@@ -25,6 +25,9 @@ using Test
 @test CRlibm.cos(Float16(1.6), RoundDown) == Float16(-0.02882)
 @test CRlibm.cos(Float16(0.5)) == CRlibm.cos(Float16(0.5), RoundNearest)
 
+# One failing example from #45
+@test CRlibm.log10(10.0, RoundUp) == 1.0
+
 function my_eps(prec::Int)
     ldexp(eps(Float64), 53-prec)
 end

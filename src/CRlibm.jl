@@ -156,6 +156,9 @@ const MPFR_function_names = split("""exp expm1 log log1p log2 log10
 
 const MPFR_functions = map(Symbol, MPFR_function_names)
 
-use_MPFR = setup()
+# The underlying crlibm tests fail on 32 bit build - just use MPFR there (see #45)
+is_32_bit = Int == Int32
+
+use_MPFR = setup(is_32_bit)
 
 end # module

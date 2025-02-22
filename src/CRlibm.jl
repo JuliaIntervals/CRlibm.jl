@@ -1,6 +1,6 @@
 module CRlibm
 
-import CRlibm_jll
+    import CRlibm_jll
 
 # All functions in CRlibm except the power function, according to Section 0.4 of
 # the PDF manual (page 8)
@@ -96,4 +96,4 @@ end
 
 setup(is_32_bit)
 
-end # module
+end

@@ -71,7 +71,7 @@ julia> cos(0.5) # Julia build-in `cos` function
 0.8775825618903728
 ```
 
-using the [built-in mathematics library, OpenLibm](https://github.com/JuliaLang/openlibm). The result is a floating-point number that is a very good approximation to the true value. However, we do not know if the result that Julia gives is below or above the true value, nor how far away it is.
+using the built-in mathematics library [OpenLibm](https://github.com/JuliaLang/openlibm). The result is a floating-point number that is a very good approximation to the true value. However, we do not know if the result that Julia gives is below or above the true value, nor how far away it is.
 
 Correctly-rounded functions guarantee that when the result is not exactly representable as a floating-point number, the value returned is the **next largest floating-point number when rounding up**, or **the next smallest when rounding down**. This is equivalent to doing the calculation in infinite precision and then performing the rounding.
 

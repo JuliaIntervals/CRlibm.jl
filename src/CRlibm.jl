@@ -52,12 +52,8 @@ for f ∈ functions
         @eval $mpfr_f(x::Float32, r::RoundingMode) = Float32($mpfr_f(Float64(x), r), r)
         @eval $mpfr_f(x::Float64, r::RoundingMode) = Float64($mpfr_f(BigFloat(x; precision = precision(x)), r), r)
         @eval function $mpfr_f(x::BigFloat, r::RoundingMode)
-            bigz = BigFloat(; precision = precision(x))
-            @ccall Base.MPFR.libmpfr.$mpfr_f(
-                bigz::Ref{BigFloat},
-                x::Ref{BigFloat},
-                r::Base.MPFR.MPFRRoundingMode
-            )::Int32
+            z = BigFloat(; precision = precision(x))
+            ccall(($mpfr_f, Base.MPFR.libmpfr), Int32, (Ref{BigFloat}, Ref{BigFloat}, Base.MPFR.MPFRRoundingMode), z, x, r)
             return bigz
         end
     end

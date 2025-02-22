@@ -103,4 +103,4 @@ julia> CRlibm.exp(BigFloat(0.51), RoundUp)
 1.66529119494588632327
 ```
 
-The function `CRlibm.shadow_MPFR()` can be called to redefine the functions that take floating-point arguments to also use the MPFR versions; this is automatic if the `CRlibm` library is not available.
+The function `CRlibm.setup(true)` can be called to redefine the functions to use MPFR instead of CRlibm; this is automatic on 32 bit systems.

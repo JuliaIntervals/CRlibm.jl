@@ -13,7 +13,8 @@ const functions = [:exp, :expm1,
                    :sinpi, :cospi, :tanpi, :atanpi,
                    :sinh, :cosh]
 
-if VERSION ≥ v"1.10" # `sinpi`, `cospi` are only available since Julia v1.10
+if VERSION ≥ v"1.10"
+    # `sinpi`, `cospi`, `tanpi`, `atanpi` are only available since Julia v1.10
     const MPFR_functions = [:exp, :expm1,
                             :log, :log1p, :log2, :log10,
                             :sin, :cos, :tan, :asin, :acos, :atan,
@@ -23,7 +24,6 @@ else
     const MPFR_functions = [:exp, :expm1,
                             :log, :log1p, :log2, :log10,
                             :sin, :cos, :tan, :asin, :acos, :atan,
-                            :tanpi, :atanpi,
                             :sinh, :cosh]
 end
 

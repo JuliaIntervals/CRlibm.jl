@@ -37,6 +37,7 @@ for f ∈ functions
     crlibm_f_rz = string(f, "_rz")
     crlibm_f = Symbol(:crlibm_, f)
     mpfr_f = Symbol(:mpfr_, f)
+    str_mpfr_f = string(:mpfr_, f)
 
     if !is_32_bit
         @eval $crlibm_f(x::Float16, r::RoundingMode) = Float16($crlibm_f(Float64(x), r), r)
@@ -53,7 +54,7 @@ for f ∈ functions
         @eval $mpfr_f(x::Float64, r::RoundingMode) = Float64($mpfr_f(BigFloat(x; precision = precision(x)), r), r)
         @eval function $mpfr_f(x::BigFloat, r::RoundingMode)
             z = BigFloat(; precision = precision(x))
-            ccall(($mpfr_f, Base.MPFR.libmpfr), Int32, (Ref{BigFloat}, Ref{BigFloat}, Base.MPFR.MPFRRoundingMode), z, x, r)
+            ccall(($str_mpfr_f, Base.MPFR.libmpfr), Int32, (Ref{BigFloat}, Ref{BigFloat}, Base.MPFR.MPFRRoundingMode), z, x, r)
             return z
         end
     end

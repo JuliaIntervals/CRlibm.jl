@@ -49,7 +49,7 @@ julia> CRlibm.cos(1.6, RoundToZero)
 julia> CRlibm.cos(1.6, RoundDown)
 -0.029199522301288815
 
-julia> CRlibm.cos(0.5)  # equivalent to `CRlibm.cos(0.5, RoundNearest)`
+julia> CRlibm.cos(0.5) # equivalent to `CRlibm.cos(0.5, RoundNearest)`
 0.8775825618903728
 ```
 

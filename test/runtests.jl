@@ -1,5 +1,6 @@
-using CRlibm
 using Test
+
+using CRlibm
 
 # Float64
 @test CRlibm.cos(0.5, RoundDown) == 0.8775825618903726
@@ -91,14 +92,14 @@ function test_MPFR()
 end
 
 
-if !(CRlibm.use_MPFR)
+if !(CRlibm.is_32_bit)
     println("Testing CRlibm")
     test_CRlibm(CRlibm.functions)
     # This will currently fail on the :sinpi etc. functions (that are not defined in MPFR) if MPFR is already enabled because the CRlibm library could not be found
 
 
     println("Testing shadowing MPFR")
-    CRlibm.shadow_MPFR()
+    CRlibm.setup(true)
     test_CRlibm(CRlibm.MPFR_functions)
 end
 

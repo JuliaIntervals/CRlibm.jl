@@ -90,11 +90,7 @@ CRlibm is missing a (guaranteed) correctly-rounded power function, i.e., `x^y`. 
 As far as we are aware, the only alternative package to CRlibm is [MPFR](http://www.mpfr.org/), which provides correctly-rounded functions for
 floating-point numbers of **arbitrary precision**, including the power function. However, it can be slow.
 
-MPFR is wrapped in base Julia in the `BigFloat` type, and can emulate double-precision floating point by setting the precision to 53 bits.
-
-### Wrapping MPFR (`BigFloat`)
-
-MPFR (`BigFloat`) functions are extended with the same syntax with explicit rounding modes:
+MPFR is wrapped in base Julia in the `BigFloat` type, and can emulate double-precision floating point by setting the precision to 53 bits. In particular, the functions provided by CRlibm are extended to `BigFloat` via MPFR, with the same syntax:
 
 ```julia
 julia> setprecision(64) # change `BigFloat` precision
@@ -108,7 +104,3 @@ julia> CRlibm.exp(BigFloat(0.51), RoundUp)
 ```
 
 The function `CRlibm.shadow_MPFR()` can be called to redefine the functions that take floating-point arguments to also use the MPFR versions; this is automatic if the `CRlibm` library is not available.
-
-## Acknowledgements
-
-Financial support is acknowledged from DGAPA-UNAM PAPIME grant PE-107114 and DGAPA-UNAM PAPIIT grant IN-117214.

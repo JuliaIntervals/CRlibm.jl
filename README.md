@@ -59,7 +59,7 @@ All functions from CRlibm are wrapped, except the power function:
 - `exp`, `expm1`
 - `log`, `log1p`, `log2`, `log10`
 - `sin`, `cos`, `tan`, `asin`, `acos`, `atan`
-- `sinpi`, `cospi`, `tanpi`, `atanpi`,
+- `sinpi`, `cospi`, `tanpi`, `atanpi`
 - `sinh`, `cosh`
 
 ## What is correct rounding?

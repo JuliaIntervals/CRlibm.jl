@@ -8,6 +8,8 @@ CRlibm.jl is a Julia package wrapping the [CRlibm library](http://lipforge.ens-l
 - with a comprehensive proof of both the algorithms used and their implementation
 - sufficiently efficient in average time, worst-case time, and memory consumption to replace existing libms transparently
 
+See also: [CoreMath.jl](https://github.com/JuliaIntervals/CoreMath.jl).
+
 ### What is correct rounding?
 
 Suppose that we ask Julia to calculate the cosine of a number

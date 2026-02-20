@@ -2,7 +2,7 @@
 CRlibm
 </h1>
 
-CRlibm.jl is a Julia package wrapping the [CRlibm library](http://lipforge.ens-lyon.fr/www/crlibm/). This library provides correctly-rounded mathematical functions, as described on the library's home page:
+CRlibm.jl is a Julia package wrapping the [CRlibm library](http://lipforge.ens-lyon.fr/www/crlibm/). This library provides **correctly-rounded** mathematical functions, as described on the library's home page:
 - implementations of the double-precision C99 standard elementary functions
 - correctly rounded in the four IEEE-754 rounding modes
 - with a comprehensive proof of both the algorithms used and their implementation

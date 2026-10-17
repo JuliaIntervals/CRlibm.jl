@@ -34,7 +34,9 @@ for f ∈ functions
     crlibm_f_rd = string(f, "_rd")
     crlibm_f_ru = string(f, "_ru")
     crlibm_f_rn = string(f, "_rn")
-    crlibm_f_rz = string(f, "_rz")
+    # `exp` and `acos` are nonnegative, so crlibm.h defines `exp_rz` and `acos_rz`
+    # as macros for the `_rd` versions rather than as library functions
+    crlibm_f_rz = string(f, f ∈ (:exp, :acos) ? "_rd" : "_rz")
     crlibm_f = Symbol(:crlibm_, f)
     mpfr_f = Symbol(:mpfr_, f)
     str_mpfr_f = string(:mpfr_, f)

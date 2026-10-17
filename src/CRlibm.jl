@@ -2,6 +2,9 @@ module CRlibm
 
     import CRlibm_jll
 
+# `Base.MPFR.libmpfr` was added in Julia 1.9
+const libmpfr = isdefined(Base.MPFR, :libmpfr) ? Base.MPFR.libmpfr : :libmpfr
+
 # All functions in CRlibm except the power function, according to Section 0.4 of
 # the PDF manual (page 8)
 # Source: ./deps/src/crlibm1.0beta4/docs/latex/0_getting-started.tex
@@ -54,7 +57,7 @@ for f ∈ functions
         @eval $mpfr_f(x::Float64, r::RoundingMode) = Float64($mpfr_f(BigFloat(x; precision = precision(x)), r), r)
         @eval function $mpfr_f(x::BigFloat, r::RoundingMode)
             z = BigFloat(; precision = precision(x))
-            ccall(($str_mpfr_f, :libmpfr), Int32, (Ref{BigFloat}, Ref{BigFloat}, Base.MPFR.MPFRRoundingMode), z, x, r)
+            ccall(($str_mpfr_f, libmpfr), Int32, (Ref{BigFloat}, Ref{BigFloat}, Base.MPFR.MPFRRoundingMode), z, x, r)
             return z
         end
     end

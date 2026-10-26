@@ -36,15 +36,13 @@ for f ∈ functions
         @eval $crlibm_f(x::Float64, ::RoundingMode{:ToZero})  = ccall(($crlibm_f_rz, CRlibm_jll.libcrlibm), Float64, (Float64,), x)
     end
 
-    if f ∈ MPFR_functions
-        @eval $mpfr_f(x::Float16, r::RoundingMode) = Float16($mpfr_f(Float64(x), r), r)
-        @eval $mpfr_f(x::Float32, r::RoundingMode) = Float32($mpfr_f(Float64(x), r), r)
-        @eval $mpfr_f(x::Float64, r::RoundingMode) = Float64($mpfr_f(BigFloat(x; precision = precision(x)), r), r)
-        @eval function $mpfr_f(x::BigFloat, r::RoundingMode)
-            z = BigFloat(; precision = precision(x))
-            ccall(($str_mpfr_f, Base.MPFR.libmpfr), Int32, (Ref{BigFloat}, Ref{BigFloat}, Base.MPFR.MPFRRoundingMode), z, x, r)
-            return z
-        end
+    @eval $mpfr_f(x::Float16, r::RoundingMode) = Float16($mpfr_f(Float64(x), r), r)
+    @eval $mpfr_f(x::Float32, r::RoundingMode) = Float32($mpfr_f(Float64(x), r), r)
+    @eval $mpfr_f(x::Float64, r::RoundingMode) = Float64($mpfr_f(BigFloat(x; precision = precision(x)), r), r)
+    @eval function $mpfr_f(x::BigFloat, r::RoundingMode)
+        z = BigFloat(; precision = precision(x))
+        ccall(($str_mpfr_f, Base.MPFR.libmpfr), Int32, (Ref{BigFloat}, Ref{BigFloat}, Base.MPFR.MPFRRoundingMode), z, x, r)
+        return z
     end
 end
 

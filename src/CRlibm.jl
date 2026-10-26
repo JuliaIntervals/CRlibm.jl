@@ -2,9 +2,6 @@ module CRlibm
 
     import CRlibm_jll
 
-# `Base.MPFR.libmpfr` was added in Julia 1.9
-const libmpfr = isdefined(Base.MPFR, :libmpfr) ? Base.MPFR.libmpfr : :libmpfr
-
 # All functions in CRlibm except the power function, according to Section 0.4 of
 # the PDF manual (page 8)
 # Source: ./deps/src/crlibm1.0beta4/docs/latex/0_getting-started.tex
@@ -16,19 +13,7 @@ const functions = [:exp, :expm1,
                    :sinpi, :cospi, :tanpi, :atanpi,
                    :sinh, :cosh]
 
-if VERSION ≥ v"1.10"
-    # `sinpi`, `cospi`, `tanpi`, `atanpi` are only available since Julia v1.10
-    const MPFR_functions = [:exp, :expm1,
-                            :log, :log1p, :log2, :log10,
-                            :sin, :cos, :tan, :asin, :acos, :atan,
-                            :sinpi, :cospi, :tanpi, :atanpi,
-                            :sinh, :cosh]
-else
-    const MPFR_functions = [:exp, :expm1,
-                            :log, :log1p, :log2, :log10,
-                            :sin, :cos, :tan, :asin, :acos, :atan,
-                            :sinh, :cosh]
-end
+const MPFR_functions = functions
 
 # The underlying CRlibm tests fail on 32 bit build, use MPFR
 is_32_bit = Int == Int32
@@ -51,15 +36,13 @@ for f ∈ functions
         @eval $crlibm_f(x::Float64, ::RoundingMode{:ToZero})  = ccall(($crlibm_f_rz, CRlibm_jll.libcrlibm), Float64, (Float64,), x)
     end
 
-    if f ∈ MPFR_functions
-        @eval $mpfr_f(x::Float16, r::RoundingMode) = Float16($mpfr_f(Float64(x), r), r)
-        @eval $mpfr_f(x::Float32, r::RoundingMode) = Float32($mpfr_f(Float64(x), r), r)
-        @eval $mpfr_f(x::Float64, r::RoundingMode) = Float64($mpfr_f(BigFloat(x; precision = precision(x)), r), r)
-        @eval function $mpfr_f(x::BigFloat, r::RoundingMode)
-            z = BigFloat(; precision = precision(x))
-            ccall(($str_mpfr_f, libmpfr), Int32, (Ref{BigFloat}, Ref{BigFloat}, Base.MPFR.MPFRRoundingMode), z, x, r)
-            return z
-        end
+    @eval $mpfr_f(x::Float16, r::RoundingMode) = Float16($mpfr_f(Float64(x), r), r)
+    @eval $mpfr_f(x::Float32, r::RoundingMode) = Float32($mpfr_f(Float64(x), r), r)
+    @eval $mpfr_f(x::Float64, r::RoundingMode) = Float64($mpfr_f(BigFloat(x; precision = precision(x)), r), r)
+    @eval function $mpfr_f(x::BigFloat, r::RoundingMode)
+        z = BigFloat(; precision = precision(x))
+        ccall(($str_mpfr_f, Base.MPFR.libmpfr), Int32, (Ref{BigFloat}, Ref{BigFloat}, Base.MPFR.MPFRRoundingMode), z, x, r)
+        return z
     end
 end
 

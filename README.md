@@ -33,7 +33,7 @@ All functions from CRlibm are wrapped, except the power function:
 
 ## Installation
 
-The CRlibm.jl package requires to [install Julia](https://julialang.org/downloads/) (v1.3 or above).
+The CRlibm.jl package requires to [install Julia](https://julialang.org/downloads/) (v1.10 or above).
 
 Then, start Julia and execute the following command in the REPL:
 

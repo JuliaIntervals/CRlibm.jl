@@ -29,6 +29,10 @@ using CRlibm
 # One failing example from #45
 @test CRlibm.log10(10.0, RoundUp) == 1.0
 
+# Functions whose `_rz` versions are macros in crlibm.h
+@test CRlibm.exp(0.5, RoundToZero) == CRlibm.exp(0.5, RoundDown)
+@test CRlibm.acos(0.5, RoundToZero) == CRlibm.acos(0.5, RoundDown)
+
 function my_eps(prec::Int)
     ldexp(eps(Float64), 53-prec)
 end

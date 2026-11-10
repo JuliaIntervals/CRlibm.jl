@@ -24,6 +24,10 @@ jobs:
         exclude:
           - os: macOS-latest
             arch: x86
+        include:
+          - version: '1'
+            os: ubuntu-24.04-arm
+            arch: aarch64
     steps:
       - uses: actions/checkout@v4
       - uses: julia-actions/setup-julia@v2

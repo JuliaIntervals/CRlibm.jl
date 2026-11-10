@@ -34,12 +34,9 @@ using CRlibm
 @test CRlibm.acos(0.5, RoundToZero) == CRlibm.acos(0.5, RoundDown)
 
 # Arguments that are not floating-point numbers
-@test CRlibm.sin(1, RoundDown) == CRlibm.sin(1.0, RoundDown)
-@test CRlibm.sin(1//2, RoundUp) == CRlibm.sin(0.5, RoundUp)
-@test_throws ArgumentError CRlibm.sin(π, RoundDown)
-@test_throws ArgumentError CRlibm.sin(1//3, RoundUp)
-@test_throws ArgumentError CRlibm.sin(Int64(2)^53 + 1, RoundDown)
-@test isnan(CRlibm.sin(NaN, RoundDown))
+@test_throws MethodError CRlibm.sin(π, RoundDown)
+@test_throws MethodError CRlibm.sin(1//3, RoundUp)
+@test_throws MethodError CRlibm.sin(1, RoundDown)
 
 # Comparison with MPFR
 big_atanpi(x) = atan(x) / π
@@ -111,7 +108,7 @@ function test_CRlibm(functions)
 
         ff = getfield(CRlibm, f)  # the actual Julia function
 
-        for val in (0.51, 103.2, -17.1, -0.00005, 1)
+        for val in (0.51, 103.2, -17.1, -0.00005, 1.0)
 
             #@show f, val
 

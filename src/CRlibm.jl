@@ -27,13 +27,6 @@ function _nearest(f, ::Type{T}, x::Float64) where {T}
     return d == n ? hi : lo
 end
 
-_float(x::AbstractFloat) = x
-function _float(x::Real)
-    y = float(x)
-    y == x || throw(ArgumentError("$x is not exactly representable as a floating-point number"))
-    return y
-end
-
 for f ∈ functions
     crlibm_f_rd = string(f, "_rd")
     crlibm_f_ru = string(f, "_ru")
@@ -90,12 +83,12 @@ function setup(use_MPFR::Bool=false)
         @info "CRlibm is shadowing MPFR"
         for f ∈ functions
             mpfr_f = Symbol(:mpfr_, f)
-            @eval $f(x::Real, r::RoundingMode) = $mpfr_f(_float(x), r)
+            @eval $f(x::Union{Float16,Float32,Float64}, r::RoundingMode) = $mpfr_f(x, r)
         end
     else
         for f ∈ functions
             crlibm_f = Symbol(:crlibm_, f)
-            @eval $f(x::Real, r::RoundingMode) = $crlibm_f(_float(x), r)
+            @eval $f(x::Union{Float16,Float32,Float64}, r::RoundingMode) = $crlibm_f(x, r)
         end
     end
 

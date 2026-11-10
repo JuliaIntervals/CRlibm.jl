@@ -52,8 +52,6 @@ domain(f) = f ∈ (:asin, :acos) ? (-1.0, 1.0) :
             f ∈ (:log, :log2, :log10) ? (0.0, 1000.0) :
             f === :log1p ? (-1.0, 1000.0) : (-20.0, 20.0)
 
-is_pi(f) = f ∈ (:sinpi, :cospi, :tanpi, :atanpi)
-
 @testset "$f" for f in CRlibm.functions
     ff = getfield(CRlibm, f)
     lo, hi = domain(f)
@@ -67,10 +65,27 @@ is_pi(f) = f ∈ (:sinpi, :cospi, :tanpi, :atanpi)
         x = reinterpret(Float16, i)
         (isfinite(x) && lo <= x <= hi) || continue
         x == lo && f ∈ (:log, :log2, :log10, :log1p) && continue
-        is_pi(f) && isinteger(2x) && continue
+        f === :tanpi && isinteger(2x) && continue
         for r in (RoundDown, RoundUp, RoundNearest, RoundToZero)
             @test ff(x, r) === reference(f, x, r)
         end
+    end
+end
+
+# Hard cases from the tests of the crlibm library
+const MODES = Dict("N" => RoundNearest, "P" => RoundUp, "M" => RoundDown, "Z" => RoundToZero)
+
+to_float(hi, lo) = reinterpret(Float64, UInt64(parse(UInt32, replace(hi, "0x" => ""); base = 16)) << 32 |
+                                        parse(UInt32, replace(lo, "0x" => ""); base = 16))
+
+@testset "$f hard cases" for f in CRlibm.functions
+    ff = getfield(CRlibm, f)
+    lines = readlines(joinpath(@__DIR__, "testdata", "$f.testdata"))
+    lines = filter(!isempty, [split(first(split(line, '#'))) for line in lines])
+    for t in lines[2:end]
+        x, y = to_float(t[2], t[3]), to_float(t[4], t[5])
+        z = ff(x, MODES[t[1]])
+        @test isnan(y) ? isnan(z) : z === y
     end
 end
 

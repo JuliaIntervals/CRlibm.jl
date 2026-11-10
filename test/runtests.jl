@@ -41,8 +41,51 @@ using CRlibm
 @test_throws ArgumentError CRlibm.sin(2^53 + 1, RoundDown)
 @test isnan(CRlibm.sin(NaN, RoundDown))
 
+# Comparison with MPFR
+big_atanpi(x) = atan(x) / π
+big_function(f) = f === :atanpi ? big_atanpi : getfield(Base, f)
+
+function reference(f, x, r)
+    setprecision(BigFloat, 1024) do
+        return typeof(x)(big_function(f)(BigFloat(x)), r)
+    end
+end
+
+domain(f) = f ∈ (:asin, :acos) ? (-1.0, 1.0) :
+            f ∈ (:log, :log2, :log10) ? (0.0, 1000.0) :
+            f === :log1p ? (-1.0, 1000.0) : (-20.0, 20.0)
+
+is_pi(f) = f ∈ (:sinpi, :cospi, :tanpi, :atanpi)
+
+@testset "$f" for f in CRlibm.functions
+    ff = getfield(CRlibm, f)
+    lo, hi = domain(f)
+    for k in 1:500, T in (Float64, Float32)
+        x = T(lo + (hi - lo) * mod(k * 0.6180339887498949, 1))
+        for r in (RoundDown, RoundUp, RoundNearest, RoundToZero)
+            @test ff(x, r) === reference(f, x, r)
+        end
+    end
+    for i in 0x0000:0xffff
+        x = reinterpret(Float16, i)
+        (isfinite(x) && lo <= x <= hi) || continue
+        x == lo && f ∈ (:log, :log2, :log10, :log1p) && continue
+        is_pi(f) && isinteger(2x) && continue
+        for r in (RoundDown, RoundUp, RoundNearest, RoundToZero)
+            @test ff(x, r) === reference(f, x, r)
+        end
+    end
+end
+
 # Float32 result that lies close to the middle of two Float32 numbers
 @test CRlibm.sinh(Float32(0x1.250bfep-11), RoundNearest) === Float32(0x1.250bfep-11)
+
+# Inputs for which a library built with fused multiply-adds is wrong
+@test CRlibm.tan(0.1, RoundUp) >= tan(big(0.1))
+@test CRlibm.sin(1e9, RoundDown) <= sin(big(1e9))
+@test CRlibm.exp(1.0, RoundUp) >= exp(big(1.0))
+@test CRlibm.log1p(-0x1.852ea01927fc8p-7, RoundDown) <= log1p(big(-0x1.852ea01927fc8p-7))
+@test CRlibm.log2(0x1.9e37cb67e91a2p+0, RoundDown) <= log2(big(0x1.9e37cb67e91a2p+0))
 
 function my_eps(prec::Int)
     ldexp(eps(Float64), 53-prec)

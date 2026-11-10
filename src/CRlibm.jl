@@ -2,10 +2,9 @@ module CRlibm
 
     import CRlibm_jll
 
-# All functions in CRlibm except the power function, according to Section 0.4 of
-# the PDF manual (page 8)
-# Source: ./deps/src/crlibm1.0beta4/docs/latex/0_getting-started.tex
-# Section "Currently available functions"
+# All functions in CRlibm except the power function, according to the section
+# "Currently available functions" of docs/latex/0_getting-started.tex in
+# https://github.com/JuliaIntervals/crlibm
 
 const functions = [:exp, :expm1,
                    :log, :log1p, :log2, :log10,

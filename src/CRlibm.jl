@@ -18,6 +18,13 @@ const MPFR_functions = functions
 # The underlying CRlibm tests fail on 32 bit build, use MPFR
 is_32_bit = Int == Int32
 
+_float(x::AbstractFloat) = x
+function _float(x::Real)
+    y = float(x)
+    y == x || throw(ArgumentError("$x is not exactly representable as a floating-point number"))
+    return y
+end
+
 for f ∈ functions
     crlibm_f_rd = string(f, "_rd")
     crlibm_f_ru = string(f, "_ru")
@@ -70,12 +77,12 @@ function setup(use_MPFR::Bool=false)
         @info "CRlibm is shadowing MPFR"
         for f ∈ functions
             mpfr_f = Symbol(:mpfr_, f)
-            @eval $f(x::Real, r::RoundingMode) = $mpfr_f(float(x), r)
+            @eval $f(x::Real, r::RoundingMode) = $mpfr_f(_float(x), r)
         end
     else
         for f ∈ functions
             crlibm_f = Symbol(:crlibm_, f)
-            @eval $f(x::Real, r::RoundingMode) = $crlibm_f(float(x), r)
+            @eval $f(x::Real, r::RoundingMode) = $crlibm_f(_float(x), r)
         end
     end
 

@@ -33,6 +33,14 @@ using CRlibm
 @test CRlibm.exp(0.5, RoundToZero) == CRlibm.exp(0.5, RoundDown)
 @test CRlibm.acos(0.5, RoundToZero) == CRlibm.acos(0.5, RoundDown)
 
+# Arguments that are not floating-point numbers
+@test CRlibm.sin(1, RoundDown) == CRlibm.sin(1.0, RoundDown)
+@test CRlibm.sin(1//2, RoundUp) == CRlibm.sin(0.5, RoundUp)
+@test_throws ArgumentError CRlibm.sin(π, RoundDown)
+@test_throws ArgumentError CRlibm.sin(1//3, RoundUp)
+@test_throws ArgumentError CRlibm.sin(2^53 + 1, RoundDown)
+@test isnan(CRlibm.sin(NaN, RoundDown))
+
 function my_eps(prec::Int)
     ldexp(eps(Float64), 53-prec)
 end

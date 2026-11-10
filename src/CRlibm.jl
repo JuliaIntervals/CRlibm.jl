@@ -14,9 +14,6 @@ const functions = [:exp, :expm1,
 
 const MPFR_functions = functions
 
-# The underlying CRlibm tests fail on 32 bit build, use MPFR
-is_32_bit = Int == Int32
-
 function _nearest(f, ::Type{T}, x::Float64) where {T}
     n = f(x, RoundNearest)
     lo, hi = T(n, RoundDown), T(n, RoundUp)
@@ -37,16 +34,14 @@ for f ∈ functions
     mpfr_f = Symbol(:mpfr_, f)
     str_mpfr_f = string(:mpfr_, f)
 
-    if !is_32_bit
-        @eval $crlibm_f(x::Float16, r::RoundingMode) = Float16($crlibm_f(Float64(x), r), r)
-        @eval $crlibm_f(x::Float32, r::RoundingMode) = Float32($crlibm_f(Float64(x), r), r)
-        @eval $crlibm_f(x::Float16, ::RoundingMode{:Nearest}) = _nearest($crlibm_f, Float16, Float64(x))
-        @eval $crlibm_f(x::Float32, ::RoundingMode{:Nearest}) = _nearest($crlibm_f, Float32, Float64(x))
-        @eval $crlibm_f(x::Float64, ::RoundingMode{:Down})    = ccall(($crlibm_f_rd, CRlibm_jll.libcrlibm), Float64, (Float64,), x)
-        @eval $crlibm_f(x::Float64, ::RoundingMode{:Up})      = ccall(($crlibm_f_ru, CRlibm_jll.libcrlibm), Float64, (Float64,), x)
-        @eval $crlibm_f(x::Float64, ::RoundingMode{:Nearest}) = ccall(($crlibm_f_rn, CRlibm_jll.libcrlibm), Float64, (Float64,), x)
-        @eval $crlibm_f(x::Float64, ::RoundingMode{:ToZero})  = ccall(($crlibm_f_rz, CRlibm_jll.libcrlibm), Float64, (Float64,), x)
-    end
+    @eval $crlibm_f(x::Float16, r::RoundingMode) = Float16($crlibm_f(Float64(x), r), r)
+    @eval $crlibm_f(x::Float32, r::RoundingMode) = Float32($crlibm_f(Float64(x), r), r)
+    @eval $crlibm_f(x::Float16, ::RoundingMode{:Nearest}) = _nearest($crlibm_f, Float16, Float64(x))
+    @eval $crlibm_f(x::Float32, ::RoundingMode{:Nearest}) = _nearest($crlibm_f, Float32, Float64(x))
+    @eval $crlibm_f(x::Float64, ::RoundingMode{:Down})    = ccall(($crlibm_f_rd, CRlibm_jll.libcrlibm), Float64, (Float64,), x)
+    @eval $crlibm_f(x::Float64, ::RoundingMode{:Up})      = ccall(($crlibm_f_ru, CRlibm_jll.libcrlibm), Float64, (Float64,), x)
+    @eval $crlibm_f(x::Float64, ::RoundingMode{:Nearest}) = ccall(($crlibm_f_rn, CRlibm_jll.libcrlibm), Float64, (Float64,), x)
+    @eval $crlibm_f(x::Float64, ::RoundingMode{:ToZero})  = ccall(($crlibm_f_rz, CRlibm_jll.libcrlibm), Float64, (Float64,), x)
 
     @eval $mpfr_f(x::Float16, r::RoundingMode) = Float16($mpfr_f(Float64(x), r), r)
     @eval $mpfr_f(x::Float32, r::RoundingMode) = Float32($mpfr_f(Float64(x), r), r)
@@ -94,6 +89,6 @@ function setup(use_MPFR::Bool=false)
     return use_MPFR
 end
 
-setup(is_32_bit)
+setup()
 
 end

@@ -41,6 +41,9 @@ using CRlibm
 @test_throws ArgumentError CRlibm.sin(2^53 + 1, RoundDown)
 @test isnan(CRlibm.sin(NaN, RoundDown))
 
+# Float32 result that lies close to the middle of two Float32 numbers
+@test CRlibm.sinh(Float32(0x1.250bfep-11), RoundNearest) === Float32(0x1.250bfep-11)
+
 function my_eps(prec::Int)
     ldexp(eps(Float64), 53-prec)
 end
